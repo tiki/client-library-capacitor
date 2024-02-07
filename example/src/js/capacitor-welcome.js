@@ -90,16 +90,12 @@ window.customElements.define(
         .addEventListener('click', async function (e) {
           try {
             const photo = await TikiClient.scan();
-            console.log('teste', photo)
-            // const image = self.shadowRoot.querySelector('#image');
-            // if (!image) {
-            //   return;
-            // }
+         
             let img = document.createElement('img');
             img.src = photo.webPath
             
             const container = self.shadowRoot.querySelector('#photo-container')
-            console.log(container)
+            
             container.appendChild(img)
           } catch (e) {
             console.warn('User cancelled', e);
