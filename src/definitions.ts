@@ -1,3 +1,4 @@
+import type { Photo } from "@capacitor/camera";
 export interface TikiClientPlugin {
-  echo(options: { value: string }): Promise<{ value: string }>;
+  scan(): Promise<Photo>;
 }

@@ -1,5 +1,5 @@
 import { SplashScreen } from '@capacitor/splash-screen';
-import { Camera } from '@capacitor/camera';
+import { TikiClient } from 'tiki-publish-client';
 
 window.customElements.define(
   'capacitor-welcome',
@@ -54,62 +54,55 @@ window.customElements.define(
       main pre {
         white-space: pre-line;
       }
+      .main-container{
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center
+      }
+      img{
+        width: 200px;
+      }
     </style>
     <div>
       <capacitor-welcome-titlebar>
-        <h1>Capacitor</h1>
+        <h1>Example App</h1>
       </capacitor-welcome-titlebar>
       <main>
-        <p>
-          Capacitor makes it easy to build powerful apps for the app stores, mobile web (Progressive Web Apps), and desktop, all
-          with a single code base.
-        </p>
-        <h2>Getting Started</h2>
-        <p>
-          You'll probably need a UI framework to build a full-featured app. Might we recommend
-          <a target="_blank" href="http://ionicframework.com/">Ionic</a>?
-        </p>
-        <p>
-          Visit <a href="https://capacitorjs.com">capacitorjs.com</a> for information
-          on using native features, building plugins, and more.
-        </p>
-        <a href="https://capacitorjs.com" target="_blank" class="button">Read more</a>
-        <h2>Tiny Demo</h2>
-        <p>
-          This demo shows how to call Capacitor plugins. Say cheese!
-        </p>
-        <p>
-          <button class="button" id="take-photo">Take Photo</button>
-        </p>
-        <p>
-          <img id="image" style="max-width: 100%">
-        </p>
+        <div class="main-container">
+          <p>
+            <button class="button" id="take-photo">Take Photo</button>
+          </p>
+          <div id="photo-container">
+
+          </div>
+        </div>
       </main>
     </div>
     `;
     }
 
-    connectedCallback() {
+    async connectedCallback() {
       const self = this;
 
-      self.shadowRoot.querySelector('#take-photo').addEventListener('click', async function (e) {
-        try {
-          const photo = await Camera.getPhoto({
-            resultType: 'uri',
-          });
-
-          const image = self.shadowRoot.querySelector('#image');
-          if (!image) {
-            return;
+      self.shadowRoot
+        .querySelector('#take-photo')
+        .addEventListener('click', async function (e) {
+          try {
+            const photo = await TikiClient.scan();
+         
+            let img = document.createElement('img');
+            img.src = photo.webPath
+            
+            const container = self.shadowRoot.querySelector('#photo-container')
+            
+            container.appendChild(img)
+          } catch (e) {
+            console.warn('User cancelled', e);
           }
-
-          image.src = photo.webPath;
-        } catch (e) {
-          console.warn('User cancelled', e);
-        }
-      });
+        });
     }
-  }
+  },
 );
 
 window.customElements.define(
@@ -138,5 +131,5 @@ window.customElements.define(
     <slot></slot>
     `;
     }
-  }
+  },
 );
