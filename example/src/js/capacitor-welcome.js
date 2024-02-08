@@ -32,6 +32,7 @@ window.customElements.define(
         border-radius: 3px;
         text-decoration: none;
         cursor: pointer;
+        margin-bottom: 1rem;
       }
       main {
         padding: 15px;
@@ -70,9 +71,12 @@ window.customElements.define(
       </capacitor-welcome-titlebar>
       <main>
         <div class="main-container">
-          <p>
+          <div>
             <button class="button" id="take-photo">Take Photo</button>
-          </p>
+          </div>
+          <div>
+            <button class="button" id="publish-photo">Publish Photo</button>
+          </div>
           <div id="photo-container">
 
           </div>
@@ -82,17 +86,18 @@ window.customElements.define(
     `;
     }
 
-    async connectedCallback() {
+    connectedCallback() {
       const self = this;
-
+      const photos = []
       self.shadowRoot
         .querySelector('#take-photo')
         .addEventListener('click', async function (e) {
           try {
             const photo = await TikiClient.scan();
-         
+            photos.push(photo)
+            
             let img = document.createElement('img');
-            img.src = photo.webPath
+            img.src = photo.base64String
             
             const container = self.shadowRoot.querySelector('#photo-container')
             
@@ -101,6 +106,16 @@ window.customElements.define(
             console.warn('User cancelled', e);
           }
         });
+
+
+      self.shadowRoot.querySelector('#publish-photo').addEventListener('click', async function(e){
+        try {
+          TikiClient.publish(photos)
+         
+        } catch (e) {
+          console.warn('User cancelled', e);
+        }
+      })
     }
   },
 );

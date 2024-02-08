@@ -57,5 +57,8 @@
   "swiftlint": "@ionic/swiftlint-config",
   "eslintConfig": {
     "extends": "@ionic/eslint-config/recommended"
+  },
+  "dependencies": {
+    "@capacitor/camera": "^5.0.9"
   }
 }
