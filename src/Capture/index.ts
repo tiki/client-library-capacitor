@@ -25,21 +25,20 @@ export default class Capture {
       allowEditing: true,
       resultType: CameraResultType.Base64,
       source: CameraSource.Camera
-    });
-
-    console.log(image)
+    }); 
     return image
   }
 
   async publish(images: Photo[]) {
     const formData = new FormData();
     images.forEach((image, index) => {
-
-      formData.append(`image_${index}`, image.base64String!);
+      const file = this.base64StringToFile(image.base64String!, index)
+      formData.append(`image_${index}`, file);
     });
 
     try {
       const headers = new Headers()
+      headers.append('Content-Type', 'multipart/form-data')
       const response = await fetch('https://postman-echo.com/post', {
         method: 'POST',
         body: formData,
@@ -56,4 +55,15 @@ export default class Capture {
       console.error('Error uploading files:');
     }
   }
+
+  private base64StringToFile(base64String: string, index: number): File {
+    const byteCharacters = atob(base64String);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    const blob =  new Blob([byteArray], { type: 'application/octet-stream' });
+    return new File([blob], `image_${index}`);
+}
 }
