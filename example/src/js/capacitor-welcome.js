@@ -97,7 +97,7 @@ window.customElements.define(
             photos.push(photo)
             
             let img = document.createElement('img');
-            img.src = photo.base64String
+            img.src = 'data:image/png;base64, ' + photo.base64String
             
             const container = self.shadowRoot.querySelector('#photo-container')
             
