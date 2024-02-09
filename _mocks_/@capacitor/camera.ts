@@ -3,7 +3,7 @@ import { Photo } from "@capacitor/camera";
 const photo: Photo = {base64String: 'base64String', path: 'image/png', format: 'png', saved: true}
 export const Camera = {
     requestPermissions(): Promise<String>{
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             // Simulate an asynchronous operation, such as fetching data from an API
             setTimeout(() => {
                 // Resolve the promise with a string value
@@ -12,7 +12,7 @@ export const Camera = {
         });
     },
     getPhoto(): Promise<Photo>{
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             // Simulate an asynchronous operation, such as fetching data from an API
             setTimeout(() => {
                 // Resolve the promise with a string value
