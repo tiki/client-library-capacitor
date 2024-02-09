@@ -33,8 +33,9 @@ export default class Capture {
 
   async publish(images: Photo[]) {
     const formData = new FormData();
-    images.forEach((image) => {
-      formData.append('image', image.base64String!);
+    images.forEach((image, index) => {
+
+      formData.append(`image_${index}`, image.base64String!);
     });
 
     try {
