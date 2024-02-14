@@ -1,12 +1,10 @@
-import { Camera } from '@capacitor/camera';
-
 import { TikiClient } from '../';
+import { type Photo } from '@capacitor/camera';
+
+const photo: Photo = {base64String: 'base64String', path: 'image/png', format: 'png', saved: true}
 
 describe('Take Photo mock function', () => {
-  test('returns a promise resolving to a Photo object', () => {
-    // Assuming fetchPhoto returns a Promise that resolves to a Photo object
-    TikiClient.scan()
-    expect(Camera.requestPermissions()).toBeDefined();
-    // expect(Camera.getPhoto()).toBeDefined();
+  test('returns a promise resolving to a Photo object',  async () => {
+    expect(await TikiClient.scan()).toMatchObject(photo)
   });
 });

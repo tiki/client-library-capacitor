@@ -1,11 +1,18 @@
-import type { CameraPlugin, CameraResultType, CameraSource } from "@capacitor/camera";
+import type { CameraPlugin } from "@capacitor/camera";
 
 export const Camera: CameraPlugin = jest.createMockFromModule('@capacitor/camera')
 
-export const mockCameraResultType: CameraResultType = jest.createMockFromModule('@capacitor/camera') as CameraResultType
+export enum CameraResultType {
+  Uri,
+  Base64,
+  DataUrl 
+}
 
-export const mockCameraSource: CameraSource = jest.createMockFromModule('@capacitor/camera') as CameraSource
-
+export enum CameraSource {
+  Camera,
+  Prompt,
+  Photos 
+}
 
 Camera.requestPermissions = () => new Promise((resolve) => resolve({
   camera: 'granted',
