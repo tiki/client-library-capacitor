@@ -17,7 +17,7 @@ export default class Capture {
     return this.permissionStatus = 'allowed'
   }
 
-  async camera(): Promise<Photo>{
+  async scan(): Promise<Photo>{
     await this.checkPermissionStatus();
 
     const image = await Camera.getPhoto({
