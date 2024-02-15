@@ -77,6 +77,12 @@ window.customElements.define(
           <div>
             <button class="button" id="publish-photo">Publish Photo</button>
           </div>
+          <div>
+            <button class="button" id="generate-key">Generate Key</button>
+          </div>
+          <div>
+            <button class="button" id="digest">Digest</button>
+          </div>
           <div id="photo-container">
 
           </div>
@@ -110,7 +116,24 @@ window.customElements.define(
 
       self.shadowRoot.querySelector('#publish-photo').addEventListener('click', async function(e){
         try {
-          TikiClient.publish(photos)
+          await TikiClient.publish(photos)
+         
+        } catch (e) {
+          console.warn('User cancelled', e);
+        }
+      })
+
+      self.shadowRoot.querySelector('#generate-key').addEventListener('click', async function(e){
+        try {
+          console.log(await TikiClient.generateKey())
+         
+        } catch (e) {
+          console.warn('User cancelled', e);
+        }
+      })
+      self.shadowRoot.querySelector('#digest').addEventListener('click', async function(e){
+        try {
+          console.log(await TikiClient.address(await TikiClient.generateKey()))
          
         } catch (e) {
           console.warn('User cancelled', e);
