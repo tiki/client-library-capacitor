@@ -25,7 +25,7 @@ export default class Auth {
   private async exportKeyPairToBuffer(
     keyPair: CryptoKeyPair,
   ): Promise<ArrayBuffer> {
-    const publicKeyExported = await crypto.subtle.exportKey(
+    const publicKeyExported = await this.crypto.exportKey(
       'spki',
       keyPair.publicKey,
     );
