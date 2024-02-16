@@ -21,4 +21,7 @@ export class TikiClientWeb extends WebPlugin implements TikiClientPlugin {
   address(keyPair: CryptoKeyPair): Promise<ArrayBuffer> {
       return auth.address(keyPair)
   }
+  getToken(providerId: string, pubKey: string, token: string): Promise<String | undefined> {
+      return auth.getToken(providerId, pubKey, token)
+  }
 }
