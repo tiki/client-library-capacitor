@@ -83,6 +83,9 @@ window.customElements.define(
           <div>
             <button class="button" id="digest">Digest</button>
           </div>
+          <div>
+            <button class="button" id="register-address">Register Address</button>
+          </div>
           <div id="photo-container">
 
           </div>
@@ -134,6 +137,18 @@ window.customElements.define(
       self.shadowRoot.querySelector('#digest').addEventListener('click', async function(e){
         try {
           console.log(await TikiClient.address(await TikiClient.generateKey()))
+         
+        } catch (e) {
+          console.warn('User cancelled', e);
+        }
+      })
+      self.shadowRoot.querySelector('#register-address').addEventListener('click', async function(e){
+        try {
+          const providerId = ''
+          const userId = ''
+          const token = ''
+          const pubKey = ''
+          await TikiClient.registerAddress(providerId, pubKey, userId, token)
          
         } catch (e) {
           console.warn('User cancelled', e);
