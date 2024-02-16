@@ -1,6 +1,9 @@
+import {Crypto} from '@peculiar/webcrypto'
+
+const crypto = new Crypto()
 export default class Auth {
   constructor() {}
-  private crypto: SubtleCrypto = window.crypto.subtle;
+  private crypto: SubtleCrypto = crypto.subtle;
 
   async getToken(providerId:string, pubKey: string, token: string): Promise<String | undefined> {
     const url = 'https://account.mytiki.com/api/latest/auth/token';
