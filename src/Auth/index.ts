@@ -1,6 +1,9 @@
+import {Crypto} from '@peculiar/webcrypto'
+
+const crypto = new Crypto()
 export default class Auth {
   constructor() {}
-  private crypto: SubtleCrypto = window.crypto.subtle;
+  private crypto: SubtleCrypto = crypto.subtle;
 
   async generateKey(): Promise<CryptoKeyPair> {
     const keypair: CryptoKeyPair = await this.crypto.generateKey(
