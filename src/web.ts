@@ -24,4 +24,12 @@ export class TikiClientWeb extends WebPlugin implements TikiClientPlugin {
   getToken(providerId: string, pubKey: string, token: string): Promise<String | undefined> {
       return auth.getToken(providerId, pubKey, token)
   }
+  registerAddress(
+    providerId: string,
+    pubKey: string,
+    userId: string,
+    token: string,
+  ): Promise<void>{
+    return auth.registerAddress(providerId, pubKey, userId, token)
+  }
 }
