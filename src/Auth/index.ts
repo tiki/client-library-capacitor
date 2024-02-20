@@ -1,14 +1,12 @@
-import { sha3_256 } from 'js-sha3';
+import KeyService from '../Key/index';
+import KeyRepository from '../Key/repository';
 
 
 export default class Auth {
   constructor() {}
 
-  private sha3 = sha3_256
-
-  private crypto: SubtleCrypto = window.crypto.subtle;
-
-
+  private keyService = new KeyService();
+  private keyRepository = new KeyRepository();
   async getToken(
     providerId: string,
     pubKey: string,
@@ -51,34 +49,12 @@ export default class Auth {
     }
   }
 
-  async generateKey(): Promise<CryptoKeyPair> {
-    const keypair: CryptoKeyPair = await this.crypto.generateKey(
-      {
-        name: 'RSASSA-PKCS1-v1_5',
-        modulusLength: 2048,
-        publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
-        hash: 'SHA-256',
-      },
-      true,
-      ['sign', 'verify'],
-    );
-    return keypair;
-  }
-
-  async address(keyPair: CryptoKeyPair): Promise<ArrayBuffer> {
-    const buffer = await this.exportKeyPairToBuffer(keyPair);
-    const digest = this.sha3.digest(buffer)
-    return new Uint8Array(digest);
-  }
-
   async registerAddress(
     providerId: string,
     pubKey: string,
     userId: string,
     token: string,
   ): Promise<void> {
-
-
     const accessToken = await this.getToken(providerId, pubKey, token);
 
     if (!accessToken) {
@@ -86,22 +62,23 @@ export default class Auth {
       return;
     }
 
-
-    const keyPair = await this.generateKey();
+    const keyPair = await this.keyRepository.generateKey();
 
     if (!keyPair) {
       console.error('Error generating key pair');
       return;
     }
-    // this should be converted to b64 url
-    const address = this.arrayBufferToBase64Url(await this.address(keyPair));
+
+    const address = this.keyService.arrayBufferToBase64Url(
+      await this.keyService.address(keyPair),
+    );
 
     if (!address) {
       console.error('Error generating address');
       return;
     }
 
-    const signature = await this.signMessage(
+    const signature = await this.keyService.signMessage(
       userId + '.' + address,
       keyPair.privateKey,
     );
@@ -110,11 +87,11 @@ export default class Auth {
       return;
     }
 
-    const publicKey = this.base64Encode(
-      new Uint8Array(await this.exportKeyPairToBuffer(keyPair)),
+    const publicKey = this.keyService.base64Encode(
+      new Uint8Array(await this.keyService.exportKeyPairToBuffer(keyPair)),
     );
 
-    const url = `https://account.mytiki.com/api/latest/provider/${providerId}/user`; 
+    const url = `https://account.mytiki.com/api/latest/provider/${providerId}/user`;
     const bodyData = {
       id: userId,
       address: address,
@@ -124,8 +101,8 @@ export default class Auth {
 
     const headers = new Headers();
     headers.append('accept', 'application/json');
-    headers.append('content-type', 'application/json')
-    headers.append('authorization', 'Bearer ' + accessToken)
+    headers.append('content-type', 'application/json');
+    headers.append('authorization', 'Bearer ' + accessToken);
     try {
       const response = await fetch(url, {
         method: 'POST',
@@ -133,6 +110,10 @@ export default class Auth {
         body: JSON.stringify(bodyData),
       });
       if (response.ok) {
+        await this.keyRepository.open()
+        await this.keyRepository.saveKey(keyPair.publicKey, keyPair.privateKey, 'keys')
+        await this.keyRepository.listKeys()
+        await this.keyRepository.close()
         console.log('User registration successful');
       } else {
         console.error(
@@ -143,51 +124,4 @@ export default class Auth {
       console.error('Error registering user:', error);
     }
   }
-
-  private async exportKeyPairToBuffer(
-    keyPair: CryptoKeyPair,
-  ): Promise<ArrayBuffer> {
-    const publicKeyExported = await this.crypto.exportKey(
-      'spki',
-      keyPair.publicKey,
-    );
-    const buffer = new Uint8Array(publicKeyExported.byteLength);
-    buffer.set(new Uint8Array(publicKeyExported), 0);
-    return buffer.buffer;
-  }
-
-  private base64Encode = (bytes: Uint8Array): string =>
-    btoa(
-      bytes.reduce((acc, current) => acc + String.fromCharCode(current), ''),
-    );
-
-  private async signMessage(
-    message: string,
-    privateKey: CryptoKey,
-  ): Promise<string | null> {
-    try {
-      const signature = await crypto.subtle.sign(
-        { name: 'RSASSA-PKCS1-v1_5' },
-        privateKey,
-        new TextEncoder().encode(message),
-      );
-      return this.base64Encode(new Uint8Array(signature));
-    } catch (error) {
-      console.error('Error signing message:', error);
-      return null;
-    }
-  }
-
-  private arrayBufferToBase64Url(arrayBuffer: ArrayBuffer): string {
-    const uint8Array = new Uint8Array(arrayBuffer);
-
-    const base64String = btoa(String.fromCharCode(...uint8Array));
-
-    const base64Url = base64String
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=/g, '');
-
-    return base64Url;
-}
 }
