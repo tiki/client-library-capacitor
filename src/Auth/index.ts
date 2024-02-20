@@ -80,7 +80,6 @@ export default class Auth {
 
 
     const accessToken = await this.getToken(providerId, pubKey, token);
-    console.log('accessToken', accessToken);
 
     if (!accessToken) {
       console.error('Error generating accessToken');
@@ -89,14 +88,13 @@ export default class Auth {
 
 
     const keyPair = await this.generateKey();
-    console.log('keyPair', keyPair);
 
     if (!keyPair) {
       console.error('Error generating key pair');
       return;
     }
-
-    const address = await this.address(keyPair);
+    // this should be converted to b64 url
+    const address = this.arrayBufferToBase64Url(await this.address(keyPair));
 
     if (!address) {
       console.error('Error generating address');
@@ -107,7 +105,6 @@ export default class Auth {
       userId + '.' + address,
       keyPair.privateKey,
     );
-    console.log('signature', signature);
     if (!signature) {
       console.error('Error generating signature');
       return;
@@ -116,30 +113,25 @@ export default class Auth {
     const publicKey = this.base64Encode(
       new Uint8Array(await this.exportKeyPairToBuffer(keyPair)),
     );
-    console.log('publicKey', publicKey);
 
-    const url = `https://account.mytiki.com/api/latest/provider/${providerId}/user`;
-
-    console.log('address', this.base64Encode(new Uint8Array(address)));
-
-    const bodyData = new URLSearchParams({
+    const url = `https://account.mytiki.com/api/latest/provider/${providerId}/user`; 
+    const bodyData = {
       id: userId,
-      address: this.base64Encode(new Uint8Array(address)),
+      address: address,
       pubKey: publicKey,
       signature: signature,
-    });
+    };
 
     const headers = new Headers();
     headers.append('accept', 'application/json');
-    headers.append('authorization', 'Bearer ' + accessToken);
-
+    headers.append('content-type', 'application/json')
+    headers.append('authorization', 'Bearer ' + accessToken)
     try {
       const response = await fetch(url, {
         method: 'POST',
         headers: headers,
-        body: bodyData,
+        body: JSON.stringify(bodyData),
       });
-
       if (response.ok) {
         console.log('User registration successful');
       } else {
@@ -185,4 +177,17 @@ export default class Auth {
       return null;
     }
   }
+
+  private arrayBufferToBase64Url(arrayBuffer: ArrayBuffer): string {
+    const uint8Array = new Uint8Array(arrayBuffer);
+
+    const base64String = btoa(String.fromCharCode(...uint8Array));
+
+    const base64Url = base64String
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '');
+
+    return base64Url;
+}
 }
