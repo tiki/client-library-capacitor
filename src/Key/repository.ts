@@ -13,7 +13,7 @@ export default class KeyRepository {
       }
 
       const req = indexedDB.open(this.repositoryName, 1);
-      req.onsuccess = evt => {
+      req.onsuccess = () => {
         this.repository = req.result;
         fulfill();
       };
@@ -96,7 +96,25 @@ export default class KeyRepository {
         });
     });
   }
-
+  clear(): Promise<void> {
+    return new Promise((fulfill, reject) => {
+      const transaction = this.repository!.transaction(
+        [this.repositoryStoreName],
+        'readwrite',
+      );
+      transaction.onerror = (evt: any) => {
+        reject((evt.target as IDBTransaction).error);
+      };
+      transaction.onabort = (evt: any) => {
+        reject((evt.target as IDBTransaction).error);
+      };
+      transaction.oncomplete = () => {
+        fulfill()
+      };
+      const objectStore = transaction.objectStore(this.repositoryStoreName);
+      objectStore.clear();
+    });
+  }
   close(): Promise<void> {
     return new Promise((fulfill, reject) => {
       if (!this.repository) {
@@ -111,29 +129,36 @@ export default class KeyRepository {
 
   listKeys(): Promise<any[]> {
     return new Promise((fulfill, reject) => {
-        if (!this.repository) {
-            reject(new Error("KeyStore is not open."));
+      if (!this.repository) {
+        reject(new Error('KeyStore is not open.'));
+      }
+
+      const list: any[] = [];
+
+      const transaction = this.repository!.transaction(
+        [this.repositoryStoreName],
+        'readonly',
+      );
+      transaction.onerror = (evt: Event) => {
+        reject((evt.target as IDBTransaction).error);
+      };
+      transaction.onabort = (evt: Event) => {
+        reject((evt.target as IDBTransaction).error);
+      };
+
+      const objectStore = transaction.objectStore(this.repositoryStoreName);
+      const cursor = objectStore.openCursor();
+
+      cursor.onsuccess = (evt: any) => {
+        const cursorResult = (evt.target as IDBRequest).result;
+        if (cursorResult) {
+          list.push({ id: cursorResult.key, value: cursorResult.value });
+          cursorResult.continue();
+        } else {
+          console.log('list', list);
+          fulfill(list);
         }
-
-        const list: any[] = [];
-
-        const transaction = this.repository!.transaction([this.repositoryStoreName], "readonly");
-        transaction.onerror = (evt: Event) => { reject((evt.target as IDBTransaction).error); };
-        transaction.onabort = (evt: Event) => { reject((evt.target as IDBTransaction).error); };
-
-        const objectStore = transaction.objectStore(this.repositoryStoreName);
-        const cursor = objectStore.openCursor();
-
-        cursor.onsuccess = (evt: any) => {
-            const cursorResult = (evt.target as IDBRequest).result;
-            if (cursorResult) {
-                list.push({ id: cursorResult.key, value: cursorResult.value });
-                cursorResult.continue();
-            } else {
-                console.log('list', list)
-                fulfill(list);
-            }
-        }
+      };
     });
-}
+  }
 }
