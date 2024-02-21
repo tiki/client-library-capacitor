@@ -1,9 +1,11 @@
 import { SplashScreen } from '@capacitor/splash-screen';
-import { TikiClient } from 'tiki-publish-client';
+import  TikiClient  from 'publish-client-capacitor';
 
 window.customElements.define(
   'capacitor-welcome',
   class extends HTMLElement {
+    TikiClient = new TikiClient()
+ 
     constructor() {
       super();
 
@@ -72,7 +74,7 @@ window.customElements.define(
       <main>
         <div class="main-container">
           <div>
-            <button class="button" id="take-photo">Take Photo</button>
+            <button class="button" id="take-photo">Take Phto</button>
           </div>
           <div>
             <button class="button" id="publish-photo">Publish Photo</button>
@@ -102,7 +104,7 @@ window.customElements.define(
         .querySelector('#take-photo')
         .addEventListener('click', async function (e) {
           try {
-            const photo = await TikiClient.scan();
+            const photo = await self.TikiClient.Capture.scan();
             photos.push(photo)
             
             let img = document.createElement('img');
@@ -119,24 +121,7 @@ window.customElements.define(
 
       self.shadowRoot.querySelector('#publish-photo').addEventListener('click', async function(e){
         try {
-          await TikiClient.publish(photos)
-         
-        } catch (e) {
-          console.warn('User cancelled', e);
-        }
-      })
-
-      self.shadowRoot.querySelector('#generate-key').addEventListener('click', async function(e){
-        try {
-          console.log(await TikiClient.generateKey())
-         
-        } catch (e) {
-          console.warn('User cancelled', e);
-        }
-      })
-      self.shadowRoot.querySelector('#digest').addEventListener('click', async function(e){
-        try {
-          console.log(await TikiClient.address(await TikiClient.generateKey()))
+          await self.TikiClient.Capture.publish(photos)
          
         } catch (e) {
           console.warn('User cancelled', e);
@@ -148,7 +133,7 @@ window.customElements.define(
           const userId = ''
           const token = ''
           const pubKey = ''
-          await TikiClient.registerAddress(providerId, pubKey, userId, token)
+          await self.TikiClient.registerAddress(providerId, pubKey, userId, token)
          
         } catch (e) {
           console.warn('User cancelled', e);
