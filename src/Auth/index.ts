@@ -11,7 +11,7 @@ export default class Auth {
     providerId: string,
     pubKey: string,
     token: string,
-  ): Promise<String | undefined> {
+  ): Promise<string | undefined> {
     const url = 'https://account.mytiki.com/api/latest/auth/token';
     const data = {
       grant_type: 'client_credentials',
