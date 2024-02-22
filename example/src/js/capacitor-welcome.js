@@ -175,7 +175,6 @@ window.customElements.define(
       })
       self.shadowRoot.querySelector('#create-license').addEventListener('click', async function(e){
         try {
-          console.log('teste')
           await self.TikiClient.License.create('token', samplePostLicenseRequest)
          
         } catch (e) {
