@@ -1,11 +1,10 @@
-import Auth from '../src/Auth/index'
+import KeyRepository from '../src/Key/repository'
 
-const auth = new Auth()
+const keyRepository = new KeyRepository()
 
 describe('Generate Key Method', () => {
     test('returns a promise with a keyPair object', async () => {
-      const generatedKey = await auth.generateKey()
-      console.log(generatedKey)
+      const generatedKey = await keyRepository.generateKey()
       expect(generatedKey).toBeDefined();
       expect(generatedKey).toHaveProperty('publicKey');
       expect(generatedKey).toHaveProperty('privateKey');
