@@ -9,7 +9,7 @@ describe('Address Method', () => {
       const generatedKey = await keyRepository.generateKey()
       const digest = await keyService.address(generatedKey)
       expect(digest).toBeDefined(); 
-      expect(digest instanceof ArrayBuffer).toBe(true); 
-      expect(digest.byteLength).toBe(48)
+      expect(digest instanceof Uint8Array).toBe(true); 
+      expect(digest.byteLength).toBe(32)
     });
   });
