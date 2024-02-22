@@ -25,6 +25,7 @@
   },
   "dependencies": {
     "@capacitor/camera": "^5.0.9",
+    "@peculiar/webcrypto": "^1.4.5",
     "js-sha3": "^0.9.3"
   },
   "files": [
