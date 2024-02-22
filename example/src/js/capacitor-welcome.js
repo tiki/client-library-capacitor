@@ -87,6 +87,9 @@ window.customElements.define(
           <div>
             <button class="button" id="get-license">Get License</button>
           </div>
+          <div>
+            <button class="button" id="verify-license">Verify License</button>
+          </div>
           <div id="photo-container">
 
           </div>
@@ -117,6 +120,20 @@ window.customElements.define(
         titleDesc: "Title description",
         licenseDesc: "License description"
     };
+
+    const sampleGuardRequest = {
+      ptr: "example-ptr",
+      uses: [
+        {
+            usecases: [{ value: "usecase1" }, { value: "usecase2" }],
+            destinations: ["destination1", "destination2"]
+        },
+        {
+            usecases: [{ value: "usecase3" }],
+            destinations: ["destination3"]
+        }
+    ],
+    }
       self.shadowRoot
         .querySelector('#take-photo')
         .addEventListener('click', async function (e) {
@@ -169,6 +186,15 @@ window.customElements.define(
         try {
           
           await self.TikiClient.License.get('ansduashduasd')
+         
+        } catch (e) {
+          console.warn('User cancelled', e);
+        }
+      })
+      self.shadowRoot.querySelector('#verify-license').addEventListener('click', async function(e){
+        try {
+          
+          await self.TikiClient.License.guard(sampleGuardRequest)
          
         } catch (e) {
           console.warn('User cancelled', e);

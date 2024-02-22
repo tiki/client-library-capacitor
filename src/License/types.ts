@@ -39,3 +39,13 @@ interface PostLicenseRequest {
     licenses: License[];
     requestId: string;
   }
+
+  interface PostGuardRequest {
+    ptr: string;
+    uses: Use[];
+  }
+  
+  interface RspGuard {
+    success: boolean;
+    reason: string;
+  }
