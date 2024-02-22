@@ -1,13 +1,15 @@
-import Auth from '../src/Auth/index'
+import KeyService from '../src/Key/index'
+import KeyRepository from '../src/Key/repository'
 
-const auth = new Auth()
+const keyService = new KeyService()
+const keyRepository = new KeyRepository()
 
 describe('Address Method', () => {
     test('returns a promise with the digest of the keyPair', async () => {
-      const generatedKey = await auth.generateKey()
-      const digest = await auth.address(generatedKey)
+      const generatedKey = await keyRepository.generateKey()
+      const digest = await keyService.address(generatedKey)
       expect(digest).toBeDefined(); 
-      expect(digest instanceof ArrayBuffer).toBe(true); 
-      expect(digest.byteLength).toBe(48)
+      expect(digest instanceof Uint8Array).toBe(true); 
+      expect(digest.byteLength).toBe(32)
     });
   });

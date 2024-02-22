@@ -1,7 +1,6 @@
 import KeyService from '../Key/index';
 import KeyRepository from '../Key/repository';
 
-
 export default class Auth {
   constructor() {}
 
