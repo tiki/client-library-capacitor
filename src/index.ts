@@ -1,8 +1,10 @@
-import Capture from './Capture/index';
-import Auth from './Auth/index'
+import Capture from './Capture';
+import Auth from './Auth'
+import License from './License';
 export default class TikiClient{
-  constructor(){}
+  
 
-  Capture = new Capture();
-  Auth = new Auth()
+  public Capture = new Capture();
+  public Auth = new Auth()
+  public License = new License()
 }
