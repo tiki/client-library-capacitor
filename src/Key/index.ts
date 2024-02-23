@@ -6,8 +6,12 @@ export default class KeyService {
 
   private repository: KeyRepository = new KeyRepository()
 
-  save(publicKey: CryptoKey, privateKey: CryptoKey, userId: string) {
+  public save(publicKey: CryptoKey, privateKey: CryptoKey, userId: string) {
     this.repository.save(publicKey, privateKey, userId)
+  }
+
+  public get(){
+    return this.repository.list()
   }
 
   async address(keyPair: CryptoKeyPair): Promise<ArrayBuffer> {

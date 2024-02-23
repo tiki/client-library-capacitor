@@ -1,5 +1,6 @@
 import KeyService from '../Key/index'
 import Utils from '../utils';
+import { RegisterAddressRsp } from './types';
 
 export default class Auth {
 
@@ -25,7 +26,7 @@ export default class Auth {
       scope: scopes.join(' '),
       expires: '600',
     }
-
+    
     const headers = new Headers()
     headers.append('Accept', 'application/json')
     headers.append('Content-Type', 'application/x-www-form-urlencoded')
@@ -57,7 +58,7 @@ export default class Auth {
     pubKey: string,
     userId: string,
     token: string,
-  ): Promise<void> {
+  ): Promise<string> {
     const accessToken = await this.getToken(providerId, pubKey, token, ['account:provider'])
     if (!accessToken) throw new Error('Error generating the provider accessToken')
 
@@ -97,7 +98,10 @@ export default class Auth {
       body: JSON.stringify(bodyData),
     })
     if (response.ok) {
+      const addressResponse: RegisterAddressRsp = await response.json()
       this.keyService.save(keyPair.publicKey, keyPair.privateKey, `${providerId}.${userId}`)
+      if(addressResponse.address !== address) throw new Error('Error registering user. Mismatching user Addresses')
+      return addressResponse.address
     } else {
       throw new Error(
         'Error registering user. HTTP status: ' + response.status,
