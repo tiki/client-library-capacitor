@@ -90,6 +90,12 @@ window.customElements.define(
           <div>
             <button class="button" id="verify-license">Verify License</button>
           </div>
+          <div>
+            <button class="button" id="initialize-client">Initialize</button>
+          </div>
+          <div>
+            <button class="button" id="scan-method">Scan</button>
+          </div>
           <div id="photo-container">
 
           </div>
@@ -134,6 +140,11 @@ window.customElements.define(
           }
         ],
       }
+
+      const providerId = ''
+      const userId = ''
+      const token = ''
+      const pubKey = ''
       self.shadowRoot
         .querySelector('#take-photo')
         .addEventListener('click', async function (e) {
@@ -163,10 +174,6 @@ window.customElements.define(
       })
       self.shadowRoot.querySelector('#register-address').addEventListener('click', async function (e) {
         try {
-          const providerId = ''
-          const userId = ''
-          const token = ''
-          const pubKey = ''
           await self.TikiClient.auth.registerAddress(providerId, pubKey, userId, token)
 
         } catch (e) {
@@ -194,6 +201,23 @@ window.customElements.define(
         try {
 
           await self.TikiClient.license.guard(sampleGuardRequest)
+
+        } catch (e) {
+          console.warn('User cancelled', e)
+        }
+      })
+      self.shadowRoot.querySelector('#initialize-client').addEventListener('click', async function (e) {
+        try {
+          await self.TikiClient.initialize(providerId, pubKey, userId, token)
+
+        } catch (e) {
+          console.warn('User cancelled', e)
+        }
+      })
+      self.shadowRoot.querySelector('#scan-method').addEventListener('click', async function (e) {
+        try {
+        
+          await self.TikiClient.scan(providerId, userId, pubKey, token)
 
         } catch (e) {
           console.warn('User cancelled', e)
