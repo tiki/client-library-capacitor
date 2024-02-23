@@ -13,35 +13,29 @@ export default class TikiClient{
   public auth = new Auth(this.keyService)
   public license = new License()
 
-  public async initialize(providerId: string, pubKey: string, userId: string, token: string){
-    console.log(this.address, 'address')
+  public async initialize(providerId: string, pubKey: string, userId: string){
+
     await this.keyService.clear()
+
     const keys = await this.keyService.get()
 
     if(keys.find((key)=> key.value.name === `${providerId}.${userId}`)) return 
 
-    const address = await this.auth.registerAddress(providerId, pubKey, userId, token)
+    const address = await this.auth.registerAddress(providerId, pubKey, userId)
 
     this.address = address
 
-    console.log(this.address, 'address')
   }
 
-  public async scan(providerId: string, userId: string, pubKey: string, token: string){
-
-    const providerToken = await this.auth.getToken(providerId, pubKey, token, ['account:provider', 'trail', 'publish'])
-    
-    if(!providerToken) throw new Error('Error to get Provider Token')
+  public async scan(providerId: string, userId: string){
     
     const keys = await this.keyService.get()
 
     const key = keys.find((key)=> key.value.name === `${providerId}.${userId}`)
 
-    console.log('address222', this.address)
-    
     const address = await Utils.generateSignature(this.address!, key?.value.privateKey!)
 
-    const addressToken = await this.auth.getToken(providerId, this.address, providerToken!, [], address)
+    const addressToken = await this.auth.getToken(providerId, address, [], this.address)
     if(!addressToken) throw new Error('Error to get Address Token')
 
     const sampleGuardRequest = {

@@ -142,8 +142,7 @@ window.customElements.define(
       }
 
       const providerId = ''
-      const userId = ''
-      const token = ''
+      const userId = 'someUserID'
       const pubKey = ''
       self.shadowRoot
         .querySelector('#take-photo')
@@ -174,7 +173,7 @@ window.customElements.define(
       })
       self.shadowRoot.querySelector('#register-address').addEventListener('click', async function (e) {
         try {
-          await self.TikiClient.auth.registerAddress(providerId, pubKey, userId, token)
+          await self.TikiClient.auth.registerAddress(providerId, pubKey, userId)
 
         } catch (e) {
           console.warn('User cancelled', e)
@@ -208,7 +207,7 @@ window.customElements.define(
       })
       self.shadowRoot.querySelector('#initialize-client').addEventListener('click', async function (e) {
         try {
-          await self.TikiClient.initialize(providerId, pubKey, userId, token)
+          await self.TikiClient.initialize(providerId, pubKey, userId)
 
         } catch (e) {
           console.warn('User cancelled', e)
@@ -217,7 +216,7 @@ window.customElements.define(
       self.shadowRoot.querySelector('#scan-method').addEventListener('click', async function (e) {
         try {
         
-          await self.TikiClient.scan(providerId, userId, pubKey, token)
+          await self.TikiClient.scan(providerId, userId, pubKey)
 
         } catch (e) {
           console.warn('User cancelled', e)

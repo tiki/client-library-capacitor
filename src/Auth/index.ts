@@ -13,15 +13,14 @@ export default class Auth {
   async getToken(
     providerId: string,
     secret: string,
-    token: string,
     scopes: Array<string>,
     address?: string,
   ): Promise<string | undefined> {
     const url = 'https://account.mytiki.com/api/latest/auth/token'
-    console.log('address3333', address)
+    
     const data = {
       grant_type: 'client_credentials',
-      client_id: address == undefined ? `provider:${providerId}` : `address:${providerId}:${address}`,
+      client_id: address == undefined ? `provider:${providerId}` : `addr:${providerId}:${address}`,
       client_secret: secret,
       scope: scopes.join(' '),
       expires: '600',
@@ -30,7 +29,6 @@ export default class Auth {
     const headers = new Headers()
     headers.append('Accept', 'application/json')
     headers.append('Content-Type', 'application/x-www-form-urlencoded')
-    headers.append('Authorization', `Bearer ${token}`)
 
     const requestOptions: RequestInit = {
       method: 'POST',
@@ -57,9 +55,8 @@ export default class Auth {
     providerId: string,
     pubKey: string,
     userId: string,
-    token: string,
   ): Promise<string> {
-    const accessToken = await this.getToken(providerId, pubKey, token, ['account:provider'])
+    const accessToken = await this.getToken(providerId, pubKey, ['account:provider'])
     if (!accessToken) throw new Error('Error generating the provider accessToken')
 
     const keyPair = await this.keyService.generateKey()

@@ -1,4 +1,3 @@
-import { sha3_256 } from 'js-sha3'
 
 export default class Utils {
 
@@ -82,18 +81,16 @@ export default class Utils {
     const encoder = new TextEncoder();
     const data = encoder.encode(address);
 
-    const hashBuffer = sha3_256.digest(data);
-
     const signature = await crypto.subtle.sign(
         {
             name: 'RSASSA-PKCS1-v1_5',
             hash: { name: 'SHA-256' },
         },
         privateKey,
-        new Uint8Array(hashBuffer)
+        new Uint8Array(data)
     );
 
-    return this.arrayBufferToBase64Url(signature);
+    return this.base64Encode(new Uint8Array(signature));
 }
 
 }
