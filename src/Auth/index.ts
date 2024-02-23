@@ -3,7 +3,7 @@ import Utils from '../utils';
 
 export default class Auth {
 
-  private keyService;
+  private keyService: KeyService;
   
   constructor(keyService : KeyService) { 
     this.keyService = keyService

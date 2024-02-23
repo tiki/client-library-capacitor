@@ -10,16 +10,7 @@ export default class TikiClient{
   public auth = new Auth(this.keyService)
   public license = new License()
 
-  initialize(providerId: string, userId: string, token: string){
-    // pegar private key pelo {providerId}.${userId}
-    // se não existir gera uma nova
-    // registra o endereço
-  }
+  initialize(){}
 
-  scan(){
-    // get address token
-    // verifica licença (sem licença não cria)
-    // chama o get photo
-    // chama o publish
-  }
+  scan(){}
 }

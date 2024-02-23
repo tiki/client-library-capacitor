@@ -5,6 +5,6 @@ const photo: Photo = { base64String: 'base64String', path: 'image/png', format: 
 const tikiClient = new TikiClient()
 describe('Take Photo mock function', () => {
   test('returns a promise resolving to a Photo object', async () => {
-    expect(await tikiClient.Capture.scan()).toMatchObject(photo)
+    expect(await tikiClient.capture.scan()).toMatchObject(photo)
   })
 })

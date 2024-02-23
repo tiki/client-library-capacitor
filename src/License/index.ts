@@ -1,15 +1,14 @@
-import Utils from "../utils"
+import Utils from "../utils";
 
 export default class License {
   private baseUrl: string =
-    "https://corsproxy.io/?" + encodeURIComponent("https://postman-echo.com")
-  private utils = new Utils()
+    "https://corsproxy.io/?" + encodeURIComponent("https://postman-echo.com");
+  private utils = new Utils();
 
   public async create(
     token: string,
     postLicenseRequest: PostLicenseRequest
   ): Promise<PostLicenseRequest> {
-    // pedir address token e colocar no header
     const url = `${this.baseUrl}/${"post"}`
     return this.utils.handleRequest<PostLicenseRequest>(
       url,
@@ -20,7 +19,6 @@ export default class License {
   }
 
   public async get(id: string, token: string): Promise<RspLicenses> {
-    // pedir address token e colocar no header
     const url = `${this.baseUrl}/${"get"}?id=${id}`
     return this.utils.handleRequest<RspLicenses>(url, "GET", token)
   }
@@ -29,7 +27,6 @@ export default class License {
     postGuardRequest: PostGuardRequest,
     token: string
   ): Promise<RspGuard> {
-    // pedir address token e colocar no header
     const url = `${this.baseUrl}/post`
     return this.utils.handleRequest<RspGuard>(
       url,

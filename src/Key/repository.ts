@@ -1,3 +1,5 @@
+import { SavedKey } from "./types"
+
 export default class KeyRepository {
   private repositoryName: string = 'com.mytiki.keys'
   private repository: any
@@ -8,8 +10,7 @@ export default class KeyRepository {
     publicKey: CryptoKey,
     privateKey: CryptoKey | null,
     name: string,
-  ): Promise<any> {
-    // TODO fazer type do return
+  ): Promise<SavedKey> {
     return new Promise((fulfill, reject) => {
       this.open()
       if (!this.repository) {
@@ -19,9 +20,9 @@ export default class KeyRepository {
       window.crypto.subtle
         .exportKey('spki', publicKey)
         .then(spki => {
-          const savedObject = {
+          const savedObject: SavedKey = {
             publicKey: publicKey,
-            privateKey: privateKey,
+            privateKey: privateKey!,
             name: name,
             spki: spki,
           }
@@ -74,7 +75,7 @@ export default class KeyRepository {
     })
   }
 
-  list(): Promise<any[]> {
+  list(): Promise<SavedKey[]> {
     return new Promise((fulfill, reject) => {
       this.open()
       if (!this.repository) {

@@ -15,55 +15,55 @@ window.customElements.define(
       root.innerHTML = `
     <style>
       :host {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"
-        display: block
-        width: 100%
-        height: 100%
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        display: block;
+        width: 100%;
+        height: 100%;
       }
       h1, h2, h3, h4, h5 {
-        text-transform: uppercase
+        text-transform: uppercase;
       }
       .button {
-        display: inline-block
-        padding: 10px
-        background-color: #73B5F6
-        color: #fff
-        font-size: 0.9em
-        border: 0
-        border-radius: 3px
-        text-decoration: none
-        cursor: pointer
-        margin-bottom: 1rem
+        display: inline-block;
+        padding: 10px;
+        background-color: #73B5F6;
+        color: #fff;
+        font-size: 0.9em;
+        border: 0;
+        border-radius: 3px;
+        text-decoration: none;
+        cursor: pointer;
+        margin-bottom: 1rem;
       }
       main {
-        padding: 15px
+        padding: 15px;
       }
-      main hr { height: 1px background-color: #eee border: 0 }
+      main hr { height: 1px; background-color: #eee; border: 0; }
       main h1 {
-        font-size: 1.4em
-        text-transform: uppercase
-        letter-spacing: 1px
+        font-size: 1.4em;
+        text-transform: uppercase;
+        letter-spacing: 1px;
       }
       main h2 {
-        font-size: 1.1em
+        font-size: 1.1em;
       }
       main h3 {
-        font-size: 0.9em
+        font-size: 0.9em;
       }
       main p {
-        color: #333
+        color: #333;
       }
       main pre {
-        white-space: pre-line
+        white-space: pre-line;
       }
       .main-container{
-        display: flex
-        justify-content: center
-        flex-direction: column
-        align-items: center
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
       }
       img{
-        width: 200px
+        width: 200px;
       }
     </style>
     <div>
@@ -73,7 +73,7 @@ window.customElements.define(
       <main>
         <div class="main-container">
           <div>
-            <button class="button" id="take-photo">Take Phto</button>
+            <button class="button" id="take-photo">Take Photo</button>
           </div>
           <div>
             <button class="button" id="publish-photo">Publish Photo</button>
@@ -138,7 +138,7 @@ window.customElements.define(
         .querySelector('#take-photo')
         .addEventListener('click', async function (e) {
           try {
-            const photo = await self.TikiClient.Capture.scan()
+            const photo = await self.TikiClient.capture.scan()
             photos.push(photo)
 
             let img = document.createElement('img')
@@ -155,7 +155,7 @@ window.customElements.define(
 
       self.shadowRoot.querySelector('#publish-photo').addEventListener('click', async function (e) {
         try {
-          await self.TikiClient.Capture.publish(photos)
+          await self.TikiClient.capture.publish(photos)
 
         } catch (e) {
           console.warn('User cancelled', e)
@@ -167,7 +167,7 @@ window.customElements.define(
           const userId = ''
           const token = ''
           const pubKey = ''
-          await self.TikiClient.Auth.registerAddress(providerId, pubKey, userId, token)
+          await self.TikiClient.auth.registerAddress(providerId, pubKey, userId, token)
 
         } catch (e) {
           console.warn('User cancelled', e)
@@ -175,7 +175,7 @@ window.customElements.define(
       })
       self.shadowRoot.querySelector('#create-license').addEventListener('click', async function (e) {
         try {
-          await self.TikiClient.License.create('token', samplePostLicenseRequest)
+          await self.TikiClient.license.create('token', samplePostLicenseRequest)
 
         } catch (e) {
           console.warn('User cancelled', e)
@@ -184,7 +184,7 @@ window.customElements.define(
       self.shadowRoot.querySelector('#get-license').addEventListener('click', async function (e) {
         try {
 
-          await self.TikiClient.License.get('ansduashduasd')
+          await self.TikiClient.license.get('ansduashduasd')
 
         } catch (e) {
           console.warn('User cancelled', e)
@@ -193,7 +193,7 @@ window.customElements.define(
       self.shadowRoot.querySelector('#verify-license').addEventListener('click', async function (e) {
         try {
 
-          await self.TikiClient.License.guard(sampleGuardRequest)
+          await self.TikiClient.license.guard(sampleGuardRequest)
 
         } catch (e) {
           console.warn('User cancelled', e)
@@ -212,18 +212,18 @@ window.customElements.define(
       root.innerHTML = `
     <style>
       :host {
-        position: relative
-        display: block
-        padding: 15px 15px 15px 15px
-        text-align: center
-        background-color: #73B5F6
+        position: relative;
+        display: block;
+        padding: 15px 15px 15px 15px;
+        text-align: center;
+        background-color: #73B5F6;
       }
       ::slotted(h1) {
-        margin: 0
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"
-        font-size: 0.9em
-        font-weight: 600
-        color: #fff
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+        font-size: 0.9em;
+        font-weight: 600;
+        color: #fff;
       }
     </style>
     <slot></slot>
