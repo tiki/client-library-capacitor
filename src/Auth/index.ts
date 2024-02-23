@@ -18,7 +18,7 @@ export default class Auth {
     address?: string,
   ): Promise<string | undefined> {
     const url = 'https://account.mytiki.com/api/latest/auth/token'
-
+    console.log('address3333', address)
     const data = {
       grant_type: 'client_credentials',
       client_id: address == undefined ? `provider:${providerId}` : `address:${providerId}:${address}`,

@@ -14,6 +14,10 @@ export default class KeyService {
     return this.repository.list()
   }
 
+  public clear(){
+    return this.repository.clear()
+  }
+
   async address(keyPair: CryptoKeyPair): Promise<ArrayBuffer> {
     const buffer = await Utils.exportKeyPairToBuffer(keyPair)
     const digest = sha3_256.digest(buffer)

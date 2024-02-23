@@ -1,3 +1,5 @@
+import { sha3_256 } from 'js-sha3'
+
 export default class Utils {
 
   public async handleRequest<T>(url: string, method: string, token: string, body?: object): Promise<T> {
@@ -75,5 +77,24 @@ export default class Utils {
 
     return base64Url
   }
+
+  public static async generateSignature(address: string, privateKey: CryptoKey): Promise<string> {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(address);
+
+    const hashBuffer = sha3_256.digest(data);
+
+    const signature = await crypto.subtle.sign(
+        {
+            name: 'RSASSA-PKCS1-v1_5',
+            hash: { name: 'SHA-256' },
+        },
+        privateKey,
+        new Uint8Array(hashBuffer)
+    );
+
+    return this.arrayBufferToBase64Url(signature);
+}
+
 }
 
