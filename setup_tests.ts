@@ -1,8 +1,8 @@
-import { Crypto } from "@peculiar/webcrypto";
-const cryptoModule = new Crypto();
+import { Crypto } from "@peculiar/webcrypto"
+const cryptoModule = new Crypto()
 
 Object.defineProperty(window, 'crypto', {
-  get(){
+  get() {
     return cryptoModule
   }
 })

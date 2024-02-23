@@ -1,6 +1,6 @@
-import License from "../src/License";
+import License from "../src/License"
 
-const license = new License();
+const license = new License()
 
 const samplePostLicenseRequest = {
   ptr: "example-ptr",
@@ -19,18 +19,18 @@ const samplePostLicenseRequest = {
   expiry: "2024-12-31",
   titleDesc: "Title description",
   licenseDesc: "License description",
-};
+}
 
 global.fetch = jest.fn(() =>
   Promise.resolve({
     ok: true,
     json: () => Promise.resolve(samplePostLicenseRequest),
   })
-) as jest.Mock;
+) as jest.Mock
 
 describe("Create License Method", () => {
   test("returns a promise with a License Object", async () => {
-    const response = await license.create("token", samplePostLicenseRequest);
-    expect(response).toMatchObject(samplePostLicenseRequest);
-  });
-});
+    const response = await license.create("token", samplePostLicenseRequest)
+    expect(response).toMatchObject(samplePostLicenseRequest)
+  })
+})

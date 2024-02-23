@@ -3,7 +3,7 @@
  * https://jestjs.io/docs/configuration
  */
 
-import type { Config } from 'jest';
+import type { Config } from 'jest'
 
 const config: Config = {
   clearMocks: true,
@@ -13,6 +13,6 @@ const config: Config = {
     '^.+\\.(js|jsx)$': 'babel-jest',
   },
   setupFiles: ["<rootDir>/setup_tests.ts"],
-};
+}
 
-export default config;
+export default config
