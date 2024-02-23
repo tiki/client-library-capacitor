@@ -1,16 +1,16 @@
-import { SplashScreen } from '@capacitor/splash-screen';
-import  TikiClient  from 'publish-client-capacitor';
+import { SplashScreen } from '@capacitor/splash-screen'
+import TikiClient from 'publish-client-capacitor'
 
 window.customElements.define(
   'capacitor-welcome',
   class extends HTMLElement {
     TikiClient = new TikiClient()
     constructor() {
-      super();
+      super()
 
-      SplashScreen.hide();
+      SplashScreen.hide()
 
-      const root = this.attachShadow({ mode: 'open' });
+      const root = this.attachShadow({ mode: 'open' })
 
       root.innerHTML = `
     <style>
@@ -60,7 +60,7 @@ window.customElements.define(
         display: flex;
         justify-content: center;
         flex-direction: column;
-        align-items: center
+        align-items: center;
       }
       img{
         width: 200px;
@@ -73,7 +73,7 @@ window.customElements.define(
       <main>
         <div class="main-container">
           <div>
-            <button class="button" id="take-photo">Take Phto</button>
+            <button class="button" id="take-photo">Take Photo</button>
           </div>
           <div>
             <button class="button" id="publish-photo">Publish Photo</button>
@@ -96,119 +96,119 @@ window.customElements.define(
         </div>
       </main>
     </div>
-    `;
+    `
     }
 
     connectedCallback() {
-      const self = this;
+      const self = this
       const photos = []
       const samplePostLicenseRequest = {
         ptr: "example-ptr",
         tags: ["tag1", "tag2"],
         uses: [
-            {
-                usecases: [{ value: "usecase1" }, { value: "usecase2" }],
-                destinations: ["destination1", "destination2"]
-            },
-            {
-                usecases: [{ value: "usecase3" }],
-                destinations: ["destination3"]
-            }
+          {
+            usecases: [{ value: "usecase1" }, { value: "usecase2" }],
+            destinations: ["destination1", "destination2"]
+          },
+          {
+            usecases: [{ value: "usecase3" }],
+            destinations: ["destination3"]
+          }
         ],
         terms: "Sample terms",
         expiry: "2024-12-31",
         titleDesc: "Title description",
         licenseDesc: "License description"
-    };
+      }
 
-    const sampleGuardRequest = {
-      ptr: "example-ptr",
-      uses: [
-        {
+      const sampleGuardRequest = {
+        ptr: "example-ptr",
+        uses: [
+          {
             usecases: [{ value: "usecase1" }, { value: "usecase2" }],
             destinations: ["destination1", "destination2"]
-        },
-        {
+          },
+          {
             usecases: [{ value: "usecase3" }],
             destinations: ["destination3"]
-        }
-    ],
-    }
+          }
+        ],
+      }
       self.shadowRoot
         .querySelector('#take-photo')
         .addEventListener('click', async function (e) {
           try {
-            const photo = await self.TikiClient.Capture.scan();
+            const photo = await self.TikiClient.capture.scan()
             photos.push(photo)
-            
-            let img = document.createElement('img');
-            img.src = 'data:image/png;base64, ' + photo.base64String
-            
+
+            let img = document.createElement('img')
+            img.src = 'data:image/pngbase64, ' + photo.base64String
+
             const container = self.shadowRoot.querySelector('#photo-container')
-            
+
             container.appendChild(img)
           } catch (e) {
-            console.warn('User cancelled', e);
+            console.warn('User cancelled', e)
           }
-        });
+        })
 
 
-      self.shadowRoot.querySelector('#publish-photo').addEventListener('click', async function(e){
+      self.shadowRoot.querySelector('#publish-photo').addEventListener('click', async function (e) {
         try {
-          await self.TikiClient.Capture.publish(photos)
-         
+          await self.TikiClient.capture.publish(photos)
+
         } catch (e) {
-          console.warn('User cancelled', e);
+          console.warn('User cancelled', e)
         }
       })
-      self.shadowRoot.querySelector('#register-address').addEventListener('click', async function(e){
+      self.shadowRoot.querySelector('#register-address').addEventListener('click', async function (e) {
         try {
           const providerId = ''
           const userId = ''
           const token = ''
           const pubKey = ''
-          await self.TikiClient.Auth.registerAddress(providerId, pubKey, userId, token)
-         
+          await self.TikiClient.auth.registerAddress(providerId, pubKey, userId, token)
+
         } catch (e) {
-          console.warn('User cancelled', e);
+          console.warn('User cancelled', e)
         }
       })
-      self.shadowRoot.querySelector('#create-license').addEventListener('click', async function(e){
+      self.shadowRoot.querySelector('#create-license').addEventListener('click', async function (e) {
         try {
-          await self.TikiClient.License.create('token', samplePostLicenseRequest)
-         
+          await self.TikiClient.license.create('token', samplePostLicenseRequest)
+
         } catch (e) {
-          console.warn('User cancelled', e);
+          console.warn('User cancelled', e)
         }
       })
-      self.shadowRoot.querySelector('#get-license').addEventListener('click', async function(e){
+      self.shadowRoot.querySelector('#get-license').addEventListener('click', async function (e) {
         try {
-          
-          await self.TikiClient.License.get('ansduashduasd')
-         
+
+          await self.TikiClient.license.get('ansduashduasd')
+
         } catch (e) {
-          console.warn('User cancelled', e);
+          console.warn('User cancelled', e)
         }
       })
-      self.shadowRoot.querySelector('#verify-license').addEventListener('click', async function(e){
+      self.shadowRoot.querySelector('#verify-license').addEventListener('click', async function (e) {
         try {
-          
-          await self.TikiClient.License.guard(sampleGuardRequest)
-         
+
+          await self.TikiClient.license.guard(sampleGuardRequest)
+
         } catch (e) {
-          console.warn('User cancelled', e);
+          console.warn('User cancelled', e)
         }
       })
     }
   },
-);
+)
 
 window.customElements.define(
   'capacitor-welcome-titlebar',
   class extends HTMLElement {
     constructor() {
-      super();
-      const root = this.attachShadow({ mode: 'open' });
+      super()
+      const root = this.attachShadow({ mode: 'open' })
       root.innerHTML = `
     <style>
       :host {
@@ -227,7 +227,7 @@ window.customElements.define(
       }
     </style>
     <slot></slot>
-    `;
+    `
     }
   },
-);
+)

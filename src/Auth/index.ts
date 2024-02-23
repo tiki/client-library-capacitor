@@ -1,50 +1,54 @@
-import KeyService from '../Key/index';
-import KeyRepository from '../Key/repository';
+import KeyService from '../Key/index'
+import Utils from '../utils';
 
 export default class Auth {
-  constructor() {}
 
-  private keyService = new KeyService();
-  private keyRepository = new KeyRepository();
+  private keyService: KeyService;
+  
+  constructor(keyService : KeyService) { 
+    this.keyService = keyService
+  }
+
   async getToken(
     providerId: string,
-    pubKey: string,
+    secret: string,
     token: string,
+    scopes: Array<string>,
+    address?: string,
   ): Promise<string | undefined> {
-    const url = 'https://account.mytiki.com/api/latest/auth/token';
+    const url = 'https://account.mytiki.com/api/latest/auth/token'
+
     const data = {
       grant_type: 'client_credentials',
-      client_id: `provider:${providerId}`,
-      client_secret: pubKey,
-      scope: 'account:provider trail publish',
+      client_id: address == undefined ? `provider:${providerId}` : `address:${providerId}:${address}`,
+      client_secret: secret,
+      scope: scopes.join(' '),
       expires: '600',
-    };
+    }
 
-    const headers = new Headers();
-    headers.append('Accept', 'application/json');
-    headers.append('Content-Type', 'application/x-www-form-urlencoded');
-    headers.append('Authorization', `Bearer ${token}`);
+    const headers = new Headers()
+    headers.append('Accept', 'application/json')
+    headers.append('Content-Type', 'application/x-www-form-urlencoded')
+    headers.append('Authorization', `Bearer ${token}`)
 
     const requestOptions: RequestInit = {
       method: 'POST',
       headers: headers,
       body: new URLSearchParams(data),
-    };
+    }
     try {
-      const response = await fetch(url, requestOptions);
+      const response = await fetch(url, requestOptions)
 
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        throw new Error(`HTTP error! Status: ${response.status}, message: ${response.json()}`)
       }
 
-      const responseData = await response.json();
+      const responseData = await response.json()
 
-      // Handle the response, e.g., extract the token
-      const { access_token } = responseData;
-      return access_token;
+      const { access_token } = responseData
+      return access_token
     } catch (error) {
-      // Handle errors
-      console.error('Error fetching token:', error);
+      throw new Error(`Error fetching token: ${error}`)
     }
   }
 
@@ -54,73 +58,50 @@ export default class Auth {
     userId: string,
     token: string,
   ): Promise<void> {
-    const accessToken = await this.getToken(providerId, pubKey, token);
+    const accessToken = await this.getToken(providerId, pubKey, token, ['account:provider'])
+    if (!accessToken) throw new Error('Error generating the provider accessToken')
 
-    if (!accessToken) {
-      console.error('Error generating accessToken');
-      return;
-    }
+    const keyPair = await this.keyService.generateKey()
+    if (!keyPair) throw new Error('Error generating key pair')
 
-    const keyPair = await this.keyRepository.generateKey();
-
-    if (!keyPair) {
-      console.error('Error generating key pair');
-      return;
-    }
-
-    const address = this.keyService.arrayBufferToBase64Url(
+    const address = Utils.arrayBufferToBase64Url(
       await this.keyService.address(keyPair),
-    );
+    )
+    if (!address) throw new Error('Error generating address')
 
-    if (!address) {
-      console.error('Error generating address');
-      return;
-    }
-
-    const signature = await this.keyService.signMessage(
+    const signature = await Utils.signMessage(
       userId + '.' + address,
       keyPair.privateKey,
-    );
-    if (!signature) {
-      console.error('Error generating signature');
-      return;
-    }
+    )
+    if (!signature) throw new Error('Error generating signature')
 
-    const publicKey = this.keyService.base64Encode(
-      new Uint8Array(await this.keyService.exportKeyPairToBuffer(keyPair)),
-    );
+    const publicKey = Utils.base64Encode(
+      new Uint8Array(await Utils.exportKeyPairToBuffer(keyPair)),
+    )
 
-    const url = `https://account.mytiki.com/api/latest/provider/${providerId}/user`;
+    const url = `https://account.mytiki.com/api/latest/provider/${providerId}/user`
     const bodyData = {
       id: userId,
       address: address,
       pubKey: publicKey,
       signature: signature,
-    };
+    }
 
-    const headers = new Headers();
-    headers.append('accept', 'application/json');
-    headers.append('content-type', 'application/json');
-    headers.append('authorization', 'Bearer ' + accessToken);
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(bodyData),
-      });
-      if (response.ok) {
-        await this.keyRepository.open()
-        await this.keyRepository.saveKey(keyPair.publicKey, keyPair.privateKey, 'keys')
-        await this.keyRepository.listKeys()
-        await this.keyRepository.close()
-        console.log('User registration successful');
-      } else {
-        console.error(
-          'Error registering user. HTTP status: ' + response.status,
-        );
-      }
-    } catch (error) {
-      console.error('Error registering user:', error);
+    const headers = new Headers()
+    headers.append('accept', 'application/json')
+    headers.append('content-type', 'application/json')
+    headers.append('authorization', 'Bearer ' + accessToken)
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(bodyData),
+    })
+    if (response.ok) {
+      this.keyService.save(keyPair.publicKey, keyPair.privateKey, `${providerId}.${userId}`)
+    } else {
+      throw new Error(
+        'Error registering user. HTTP status: ' + response.status,
+      )
     }
   }
 }
