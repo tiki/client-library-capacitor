@@ -1,5 +1,5 @@
-package com.example.plugin
+package com.example.plugin;
 
-import com.getcapacitor.BridgeActivity
+import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {}
