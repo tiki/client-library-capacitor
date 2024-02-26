@@ -1,5 +1,6 @@
 import KeyService from '../Key/index'
 import Utils from '../utils';
+import { RegisterAddressRsp } from './types';
 
 export default class Auth {
 
@@ -12,24 +13,22 @@ export default class Auth {
   async getToken(
     providerId: string,
     secret: string,
-    token: string,
     scopes: Array<string>,
     address?: string,
   ): Promise<string | undefined> {
     const url = 'https://account.mytiki.com/api/latest/auth/token'
-
+    
     const data = {
       grant_type: 'client_credentials',
-      client_id: address == undefined ? `provider:${providerId}` : `address:${providerId}:${address}`,
+      client_id: address == undefined ? `provider:${providerId}` : `addr:${providerId}:${address}`,
       client_secret: secret,
       scope: scopes.join(' '),
       expires: '600',
     }
-
+    
     const headers = new Headers()
     headers.append('Accept', 'application/json')
     headers.append('Content-Type', 'application/x-www-form-urlencoded')
-    headers.append('Authorization', `Bearer ${token}`)
 
     const requestOptions: RequestInit = {
       method: 'POST',
@@ -56,9 +55,8 @@ export default class Auth {
     providerId: string,
     pubKey: string,
     userId: string,
-    token: string,
-  ): Promise<void> {
-    const accessToken = await this.getToken(providerId, pubKey, token, ['account:provider'])
+  ): Promise<string> {
+    const accessToken = await this.getToken(providerId, pubKey, ['account:provider'])
     if (!accessToken) throw new Error('Error generating the provider accessToken')
 
     const keyPair = await this.keyService.generateKey()
@@ -97,7 +95,10 @@ export default class Auth {
       body: JSON.stringify(bodyData),
     })
     if (response.ok) {
+      const addressResponse: RegisterAddressRsp = await response.json()
       this.keyService.save(keyPair.publicKey, keyPair.privateKey, `${providerId}.${userId}`)
+      if(addressResponse.address !== address) throw new Error('Error registering user. Mismatching user Addresses')
+      return addressResponse.address
     } else {
       throw new Error(
         'Error registering user. HTTP status: ' + response.status,

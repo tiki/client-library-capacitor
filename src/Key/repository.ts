@@ -10,17 +10,17 @@ export default class KeyRepository {
     publicKey: CryptoKey,
     privateKey: CryptoKey | null,
     name: string,
-  ): Promise<SavedKey> {
-    return new Promise((fulfill, reject) => {
-      this.open()
+  ): Promise<void> {
+    return new Promise(async (fulfill, reject) => {
+      await this.open()
       if (!this.repository) {
         reject(new Error('KeyStore is not open.'))
       }
 
       window.crypto.subtle
         .exportKey('spki', publicKey)
-        .then(spki => {
-          const savedObject: SavedKey = {
+        .then(async spki => {
+          const savedObject = {
             publicKey: publicKey,
             privateKey: privateKey!,
             name: name,
@@ -38,37 +38,37 @@ export default class KeyRepository {
             reject((evt.target as IDBTransaction).error)
           }
           transaction.oncomplete = () => {
-            fulfill(savedObject)
+            fulfill()
           }
           const objectStore = transaction.objectStore(this.repositoryStoreName)
           objectStore.add(savedObject)
-          this.close()
+          await this.close()
         })
-        .catch(err => {
+        .catch(async (err) => {
           reject(err)
-          this.close()
+          await this.close()
         })
     })
   }
 
   clear(): Promise<void> {
-    return new Promise((fulfill, reject) => {
-      this.open()
+    return new Promise(async (fulfill, reject) => {
+      await this.open()
       const transaction = this.repository!.transaction(
         [this.repositoryStoreName],
         'readwrite',
       )
-      transaction.onerror = (evt: any) => {
+      transaction.onerror = async (evt: any) => {
         reject((evt.target as IDBTransaction).error)
-        this.close()
+        await this.close()
       }
-      transaction.onabort = (evt: any) => {
+      transaction.onabort = async (evt: any) => {
         reject((evt.target as IDBTransaction).error)
-        this.close()
+        await this.close()
       }
-      transaction.oncomplete = () => {
+      transaction.oncomplete = async () => {
         fulfill()
-        this.close()
+        await this.close()
       }
       const objectStore = transaction.objectStore(this.repositoryStoreName)
       objectStore.clear()
@@ -76,8 +76,8 @@ export default class KeyRepository {
   }
 
   list(): Promise<SavedKey[]> {
-    return new Promise((fulfill, reject) => {
-      this.open()
+    return new Promise(async (fulfill, reject) => {
+      await this.open()
       if (!this.repository) {
         reject(new Error('KeyStore is not open.'))
       }
@@ -88,25 +88,25 @@ export default class KeyRepository {
         [this.repositoryStoreName],
         'readonly',
       )
-      transaction.onerror = (evt: Event) => {
-        this.close()
+      transaction.onerror = async (evt: Event) => {
+        await this.close()
         reject((evt.target as IDBTransaction).error)
       }
-      transaction.onabort = (evt: Event) => {
-        this.close()
+      transaction.onabort = async (evt: Event) => {
+        await this.close()
         reject((evt.target as IDBTransaction).error)
       }
 
       const objectStore = transaction.objectStore(this.repositoryStoreName)
       const cursor = objectStore.openCursor()
 
-      cursor.onsuccess = (evt: any) => {
+      cursor.onsuccess = async (evt: any) => {
         const cursorResult = (evt.target as IDBRequest).result
         if (cursorResult) {
           list.push({ id: cursorResult.key, value: cursorResult.value })
           cursorResult.continue()
         } else {
-          this.close()
+          await this.close()
           fulfill(list)
         }
       }
