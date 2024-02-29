@@ -1,49 +1,39 @@
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera'
-import type { Photo } from "@capacitor/camera"
-import Utils from '../utils'
+import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
+import type { Photo } from "@capacitor/camera";
+import Utils from "../utils";
 
 export default class Capture {
-
   async scan(): Promise<Photo> {
+    const permissions = await Camera.checkPermissions();
 
-    const permissions = await Camera.checkPermissions()
-
-    if (permissions.camera === 'denied' || permissions.photos === 'denied') {
-      await Camera.requestPermissions()
+    if (permissions.camera === "denied" || permissions.photos === "denied") {
+      await Camera.requestPermissions();
     }
 
     return await Camera.getPhoto({
       quality: 100,
       allowEditing: true,
       resultType: CameraResultType.Base64,
-      source: CameraSource.Camera
-    })
+      source: CameraSource.Camera,
+    });
   }
 
-  async publish(images: Photo[]) {
-    const formData = new FormData()
-    images.forEach((image, index) => {
-      const file = Utils.base64StringToFile(image.base64String!, `image_${index}`)
-      formData.append(`image_${index}`, file)
-    })
+  async publish(image: Photo) {
+    const body = Utils.base64toBlob(image.base64String!, "image/jpeg");
 
-    try {
-      const headers = new Headers()
-      headers.append('Content-Type', 'multipart/form-data')
-      const response = await fetch('https://postman-echo.com/post', {
-        method: 'POST',
-        body: formData,
-        headers: headers
-      })
-
-      if (response.ok) {
-        const responseData = await response.json()
-        console.log('Upload successful. Response:', responseData)
-      } else {
-        throw new Error(`Error uploading files. Status:, ${response.status}`)
+    const headers = new Headers();
+    headers.append("Content-Type", "image/jpeg");
+    const response = await fetch(
+      "https://67vm38cq09.execute-api.us-east-2.amazonaws.com/test",
+      {
+        method: "PUT",
+        body,
+        headers: headers,
       }
-    } catch (error) {
-      throw new Error(`Error uploading files: ${error}`)
-    }
+    );
+    if (!response.ok)
+      throw new Error(`Error uploading files. Status:, ${response.status}`);
+
+    return response
   }
 }
