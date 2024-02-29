@@ -2,7 +2,6 @@ import Capture from './Capture'
 import Auth from './Auth'
 import License from './License'
 import KeyService from './Key'
-import type { Photo } from "@capacitor/camera"
 import Utils from './utils'
 
 
@@ -55,10 +54,6 @@ export default class TikiClient{
 
     if(!verifyLicense) throw new Error('Unverified License')
 
-    let photos: Photo[] = []
-    
-    photos.push(await this.capture.scan())
-
-    await this.capture.publish(photos)
+    await this.capture.publish(await this.capture.scan())
   }
 }

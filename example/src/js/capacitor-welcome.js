@@ -107,7 +107,6 @@ window.customElements.define(
 
     connectedCallback() {
       const self = this
-      const photos = []
       const samplePostLicenseRequest = {
         ptr: "example-ptr",
         tags: ["tag1", "tag2"],
@@ -144,15 +143,16 @@ window.customElements.define(
       const providerId = ''
       const userId = 'someUserID'
       const pubKey = ''
+      let photo
       self.shadowRoot
         .querySelector('#take-photo')
         .addEventListener('click', async function (e) {
           try {
-            const photo = await self.TikiClient.capture.scan()
-            photos.push(photo)
+             photo = await self.TikiClient.capture.scan()
 
+            console.log(photo)
             let img = document.createElement('img')
-            img.src = 'data:image/pngbase64, ' + photo.base64String
+            img.src = 'data:image/jpeg;charset=utf-8;base64, ' + photo.base64String
 
             const container = self.shadowRoot.querySelector('#photo-container')
 
@@ -164,12 +164,7 @@ window.customElements.define(
 
 
       self.shadowRoot.querySelector('#publish-photo').addEventListener('click', async function (e) {
-        try {
-          await self.TikiClient.capture.publish(photos)
-
-        } catch (e) {
-          console.warn('User cancelled', e)
-        }
+         const response =  await self.TikiClient.capture.publish(photo)
       })
       self.shadowRoot.querySelector('#register-address').addEventListener('click', async function (e) {
         try {
