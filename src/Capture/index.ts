@@ -21,37 +21,23 @@ export default class Capture {
       source: CameraSource.Camera,
     });
   }
-  /**
-   * Publish the Photo to Tiki
-   * @param {Photo[]} images an array of photos to be published
-   */
-  async publish(images: Photo[]) {
-    const formData = new FormData();
-    images.forEach((image, index) => {
-      const file = Utils.base64StringToFile(
-        image.base64String!,
-        `image_${index}`
-      );
-      formData.append(`image_${index}`, file);
-    });
 
-    try {
-      const headers = new Headers();
-      headers.append("Content-Type", "multipart/form-data");
-      const response = await fetch("https://postman-echo.com/post", {
-        method: "POST",
-        body: formData,
+  async publish(image: Photo) {
+    const body = Utils.base64toBlob(image.base64String!, "image/jpeg");
+
+    const headers = new Headers();
+    headers.append("Content-Type", "image/jpeg");
+    const response = await fetch(
+      "https://67vm38cq09.execute-api.us-east-2.amazonaws.com/test",
+      {
+        method: "PUT",
+        body,
         headers: headers,
-      });
-
-      if (response.ok) {
-        const responseData = await response.json();
-        console.log("Upload successful. Response:", responseData);
-      } else {
-        throw new Error(`Error uploading files. Status:, ${response.status}`);
       }
-    } catch (error) {
-      throw new Error(`Error uploading files: ${error}`);
-    }
+    );
+    if (!response.ok)
+      throw new Error(`Error uploading files. Status:, ${response.status}`);
+
+    return response
   }
 }
