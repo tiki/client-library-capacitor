@@ -7,7 +7,7 @@ export default class Capture {
    * Uses Capacitor to capture a picture with the device's camera or select a photo from the gallery.
    * @returns {Photo} with the image saved as base64-encoded string representing the photo.
    */
-  async scan(): Promise<Photo> {
+  public async scan(): Promise<Photo> {
     const permissions = await Camera.checkPermissions();
 
     if (permissions.camera === "denied" || permissions.photos === "denied") {
@@ -22,26 +22,36 @@ export default class Capture {
     });
   }
 
-    /**
-   * Publish the Photo to Tiki
-   * @param {Photo} - the photo to be published, with the format and base64string 
+  /**
+   * Publishes the provided photos to Tiki.
+   * @param {Photo[]} images - Array of photos to be published, each with the format and base64 string.
+   * @param {string} [requestId] - Optional unique identifier for the request.
+   * @returns {Promise<string>} A Promise that resolves with the ID of the request.
    */
-  async publish(image: Photo) {
-    const body = Utils.base64toBlob(image.base64String!, "image/jpeg");
+  public async publish(images: Photo[], requestId: string): Promise<string> {
+    const id = requestId ?? window.crypto.randomUUID();
+
+    const apiUrl =
+      "https://67vm38cq09.execute-api.us-east-2.amazonaws.com/receipt";
 
     const headers = new Headers();
     headers.append("Content-Type", "image/jpeg");
-    const response = await fetch(
-      "https://67vm38cq09.execute-api.us-east-2.amazonaws.com/test",
-      {
+
+    for (const image of images) {
+      const body = Utils.base64toBlob(image.base64String!, "image/jpeg");
+      const url = `${apiUrl}?id=${id}`;
+
+      const response = await fetch(url, {
         method: "PUT",
         body,
-        headers: headers,
-      }
-    );
-    if (!response.ok)
-      throw new Error(`Error uploading files. Status:, ${response.status}`);
+        headers,
+      });
 
-    return response
+      if (!response.ok) {
+        throw new Error(`Error uploading files. Status: ${response.status}`);
+      }
+    }
+
+    return id;
   }
 }
