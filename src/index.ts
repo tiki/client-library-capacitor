@@ -5,7 +5,7 @@ import KeyService from "./Key";
 import Utils from "./utils";
 import { Photo } from "@capacitor/camera";
 import { SavedKey } from "./Key/types";
-import { type PostGuardRequest, type RspGuard } from "./License/types";
+import type { PostGuardRequest, RspGuard, PostLicenseRequest} from "./License/types";
 
 export default class TikiClient {
   private static keyService = new KeyService();
@@ -92,5 +92,42 @@ export default class TikiClient {
     const id = requestId ?? window.crypto.randomUUID();
 
     await this.capture.publish(photos, id);
+  }
+
+  /**
+   * Create a license to publish data to Tiki
+   * @param {string} providerId - the provider ID of the associated provider account.
+   * @param {string} userId - The user ID to link the receipt to their information.
+   * @param {PostLicenseRequest} licenseReq - The object that contains the license information
+   * @returns 
+   */
+  public static async createLicense(providerId: string, userId: string, licenseReq: PostLicenseRequest): Promise<PostLicenseRequest>{
+    const keys: SavedKey[] = await TikiClient.keyService.get();
+
+    const key: SavedKey | undefined = keys.find(
+      (key) => key.value.name === `${providerId}.${userId}`
+    );
+
+    if (!key) throw new Error("Key Pair not found, try to initialize");
+
+    const address: string = Utils.arrayBufferToBase64Url(
+      await TikiClient.keyService.address(key.value)
+    );
+
+    const signature: string = await Utils.generateSignature(
+      address,
+      key?.value.privateKey
+    );
+
+    const addressToken: string | undefined = await TikiClient.auth.getToken(
+      providerId,
+      signature,
+      [],
+      address
+    );
+
+    if(!addressToken) throw new Error('It was not possible to get the token, try to inialize!')
+    
+    return await TikiClient.license.create(addressToken, licenseReq)
   }
 }
