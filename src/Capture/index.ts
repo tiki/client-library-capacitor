@@ -22,6 +22,10 @@ export default class Capture {
     });
   }
 
+    /**
+   * Publish the Photo to Tiki
+   * @param {Photo} - the photo to be published, with the format and base64string 
+   */
   async publish(image: Photo) {
     const body = Utils.base64toBlob(image.base64String!, "image/jpeg");
 
