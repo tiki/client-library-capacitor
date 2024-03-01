@@ -143,17 +143,17 @@ window.customElements.define(
       const providerId = ''
       const userId = 'someUserID'
       const pubKey = ''
-      let photo
+      let photos = []
       self.shadowRoot
         .querySelector('#take-photo')
         .addEventListener('click', async function (e) {
           try {
-             photo = await self.TikiClient.capture.scan()
+             let photo = await self.TikiClient.capture.scan()
 
             console.log(photo)
             let img = document.createElement('img')
             img.src = 'data:image/jpeg;charset=utf-8;base64, ' + photo.base64String
-
+            photos.push(photo)
             const container = self.shadowRoot.querySelector('#photo-container')
 
             container.appendChild(img)
@@ -164,7 +164,7 @@ window.customElements.define(
 
 
       self.shadowRoot.querySelector('#publish-photo').addEventListener('click', async function (e) {
-         const response =  await self.TikiClient.capture.publish(photo)
+         const response =  await self.TikiClient.capture.publish(photos)
       })
       self.shadowRoot.querySelector('#register-address').addEventListener('click', async function (e) {
         try {

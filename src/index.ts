@@ -3,6 +3,7 @@ import Auth from './Auth'
 import License from './License'
 import KeyService from './Key'
 import Utils from './utils'
+import { Photo } from '@capacitor/camera'
 
 
 export default class TikiClient{
@@ -26,7 +27,7 @@ export default class TikiClient{
 
   }
 
-  public async scan(providerId: string, userId: string){
+  public async scan(providerId: string, userId: string, requestId?: string){
     
     const keys = await this.keyService.get()
 
@@ -54,6 +55,9 @@ export default class TikiClient{
 
     if(!verifyLicense) throw new Error('Unverified License')
 
-    await this.capture.publish(await this.capture.scan())
+    const photos: Photo[] = [await this.capture.scan()]
+    const id = requestId ?? window.crypto.randomUUID()
+
+    await this.capture.publish(photos, id)
   }
 }
