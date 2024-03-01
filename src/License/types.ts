@@ -1,4 +1,4 @@
-interface PostLicenseRequest {
+export interface PostLicenseRequest {
   ptr: string
   tags: string[]
   uses: Use[]
@@ -8,7 +8,7 @@ interface PostLicenseRequest {
   licenseDesc: string
 }
 
-interface License {
+export interface License {
   id: string
   title: Title
   uses: Usecase[]
@@ -18,12 +18,12 @@ interface License {
   expiry: string
 }
 
-interface Use {
+export interface Use {
   usecases: Usecase[]
   destinations: string[]
 }
 
-interface Title {
+export interface Title {
   id: string
   hashedPtr: string
   tags: string[]
@@ -31,21 +31,21 @@ interface Title {
   description: string
 }
 
-interface Usecase {
+export interface Usecase {
   value: string
 }
 
-interface RspLicenses {
+export interface RspLicenses {
   licenses: License[]
   requestId: string
 }
 
-interface PostGuardRequest {
+export interface PostGuardRequest {
   ptr: string
   uses: Use[]
 }
 
-interface RspGuard {
+export interface RspGuard {
   success: boolean
   reason: string
 }
