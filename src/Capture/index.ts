@@ -3,6 +3,10 @@ import type { Photo } from "@capacitor/camera";
 import Utils from "../utils";
 
 export default class Capture {
+  /**
+   * Uses Capacitor to capture a picture with the device's camera or select a photo from the gallery.
+   * @returns {Photo} with the image saved as base64-encoded string representing the photo.
+   */
   async scan(): Promise<Photo> {
     const permissions = await Camera.checkPermissions();
 
@@ -18,6 +22,10 @@ export default class Capture {
     });
   }
 
+    /**
+   * Publish the Photo to Tiki
+   * @param {Photo} - the photo to be published, with the format and base64string 
+   */
   async publish(image: Photo) {
     const body = Utils.base64toBlob(image.base64String!, "image/jpeg");
 
