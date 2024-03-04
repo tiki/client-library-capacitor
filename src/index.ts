@@ -91,7 +91,7 @@ export default class TikiClient {
     const photos: Photo[] = [await TikiClient.capture.scan()];
     const id = requestId ?? window.crypto.randomUUID();
 
-    await this.capture.publish(photos, id);
+    await this.capture.publish(photos, id, addressToken);
   }
 
   /**
