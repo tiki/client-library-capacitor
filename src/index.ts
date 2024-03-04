@@ -29,12 +29,10 @@ export default class TikiClient {
   public static async initialize(userId: string): Promise<void> {
     TikiClient.userId = userId;
 
-    const keys = await TikiClient.keyService.get();
+    const key = await TikiClient.keyService.get(TikiClient.config.providerId, TikiClient.userId);
 
     if (
-      keys.find(
-        (key) => key.value.name === `${TikiClient.config.providerId}.${userId}`
-      )
+     !key
     )
       throw new Error(
         "The address is already registered for these provider and user IDs."
@@ -54,13 +52,7 @@ export default class TikiClient {
    * @param {string} requestId - a UUID string to identify the location of the pictures that are sent.
    */
   public static async scan(requestId?: string) {
-    const keys: SavedKey[] = await TikiClient.keyService.get();
-
-    const key: SavedKey | undefined = keys.find(
-      (key) =>
-        key.value.name ===
-        `${TikiClient.config.providerId}.${TikiClient.userId}`
-    );
+    const key = await TikiClient.keyService.get(TikiClient.config.providerId, TikiClient.userId);
 
     if (!key) throw new Error("Key Pair not found, try to initialize");
 
@@ -115,13 +107,7 @@ export default class TikiClient {
   public static async createLicense(
     licenseReq: PostLicenseRequest
   ): Promise<PostLicenseRequest> {
-    const keys: SavedKey[] = await TikiClient.keyService.get();
-
-    const key: SavedKey | undefined = keys.find(
-      (key) =>
-        key.value.name ===
-        `${TikiClient.config.providerId}.${TikiClient.userId}`
-    );
+    const key = await TikiClient.keyService.get(TikiClient.config.providerId, TikiClient.userId);
 
     if (!key) throw new Error("Key Pair not found, try to initialize");
 
