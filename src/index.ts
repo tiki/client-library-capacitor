@@ -8,7 +8,7 @@ import type {
   PostGuardRequest,
   RspGuard,
   PostLicenseRequest,
-} from "./License/types";
+} from "./License/types/index";
 import { Config } from "./Config";
 
 export default class TikiClient {
@@ -28,11 +28,12 @@ export default class TikiClient {
   public static async initialize(userId: string): Promise<void> {
     TikiClient.userId = userId;
 
-    const key = await TikiClient.keyService.get(TikiClient.config.providerId, TikiClient.userId);
+    const key = await TikiClient.keyService.get(
+      TikiClient.config.providerId,
+      TikiClient.userId
+    );
 
-    if (
-     !key
-    )
+    if (!key)
       throw new Error(
         "The address is already registered for these provider and user IDs."
       );
@@ -51,7 +52,10 @@ export default class TikiClient {
    * @param {string} requestId - a UUID string to identify the location of the pictures that are sent.
    */
   public static async scan(requestId?: string) {
-    const key = await TikiClient.keyService.get(TikiClient.config.providerId, TikiClient.userId);
+    const key = await TikiClient.keyService.get(
+      TikiClient.config.providerId,
+      TikiClient.userId
+    );
 
     if (!key) throw new Error("Key Pair not found, try to initialize");
 
@@ -103,10 +107,11 @@ export default class TikiClient {
    * Create a license to publish data to Tiki
    * @returns
    */
-  public static async createLicense(
-    licenseReq: PostLicenseRequest
-  ): Promise<PostLicenseRequest> {
-    const key = await TikiClient.keyService.get(TikiClient.config.providerId, TikiClient.userId);
+  public static async createLicense(): Promise<PostLicenseRequest> {
+    const key = await TikiClient.keyService.get(
+      TikiClient.config.providerId,
+      TikiClient.userId
+    );
 
     if (!key) throw new Error("Key Pair not found, try to initialize");
 
@@ -128,7 +133,29 @@ export default class TikiClient {
 
     if (!addressToken)
       throw new Error("It was not possible to get the token, try to inialize!");
-
+    const licenseReq: PostLicenseRequest = {
+      ptr: TikiClient.userId,
+      tags: ["purchase_history"],
+      uses: [
+        {
+          usecases: [
+            {
+              value: "attribution",
+            },
+          ],
+          destinations: ["*"],
+        },
+      ],
+      licenseDesc: "",
+      expiry: undefined,
+      titleDesc: undefined,
+      terms: await TikiClient.license.terms(
+        TikiClient.config.companyName,
+        TikiClient.config.companyJurisdiction,
+        TikiClient.config.tosUrl,
+        TikiClient.config.privacyUrl
+      ),
+    };
     return await TikiClient.license.create(addressToken, licenseReq);
   }
 

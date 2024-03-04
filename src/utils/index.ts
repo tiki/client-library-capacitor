@@ -123,4 +123,19 @@ export default class Utils {
     }
     return new Blob(byteArrays, { type: contentType });
   }
+
+  // Function to modify the content of the Markdown file
+  public static modifyMarkdownContent(
+    content: string,
+    replacements: { [key: string]: string }
+  ): string {
+    let modifiedContent = content;
+    for (const [originalWord, newWord] of Object.entries(replacements)) {
+      modifiedContent = modifiedContent.replace(
+        new RegExp(originalWord, "g"),
+        newWord
+      );
+    }
+    return modifiedContent;
+  }
 }
