@@ -1,4 +1,5 @@
 import Utils from "../utils";
+import {PostGuardRequest, PostLicenseRequest, RspLicenses, RspGuard, } from './types'
 
 export default class License {
   private baseUrl: string =

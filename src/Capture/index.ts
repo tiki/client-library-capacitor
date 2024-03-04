@@ -3,6 +3,8 @@ import type { Photo } from "@capacitor/camera";
 import Utils from "../utils";
 
 export default class Capture {
+  private publishUrl: string = "https://67vm38cq09.execute-api.us-east-2.amazonaws.com/receipt";
+
   /**
    * Uses Capacitor to capture a picture with the device's camera or select a photo from the gallery.
    * @returns {Photo} with the image saved as base64-encoded string representing the photo.
@@ -28,18 +30,16 @@ export default class Capture {
    * @param {string} [requestId] - Optional unique identifier for the request.
    * @returns {Promise<string>} A Promise that resolves with the ID of the request.
    */
-  public async publish(images: Photo[], requestId: string): Promise<string> {
+  public async publish(images: Photo[], requestId: string, token: string): Promise<string> {
     const id = requestId ?? window.crypto.randomUUID();
-
-    const apiUrl =
-      "https://67vm38cq09.execute-api.us-east-2.amazonaws.com/receipt";
 
     const headers = new Headers();
     headers.append("Content-Type", "image/jpeg");
+    headers.append("Authorization", "Bearer" + token);
 
     for (const image of images) {
       const body = Utils.base64toBlob(image.base64String!, "image/jpeg");
-      const url = `${apiUrl}?id=${id}`;
+      const url = `${this.publishUrl}/id/${id}`;
 
       const response = await fetch(url, {
         method: "PUT",
