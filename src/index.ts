@@ -5,11 +5,15 @@ import KeyService from "./Key";
 import Utils from "./utils";
 import { Photo } from "@capacitor/camera";
 import { SavedKey } from "./Key/types";
-import type { PostGuardRequest, RspGuard, PostLicenseRequest} from "./License/types";
+import type {
+  PostGuardRequest,
+  RspGuard,
+  PostLicenseRequest,
+} from "./License/types";
 
 export default class TikiClient {
+  private static userId: string = '';
   private static keyService = new KeyService();
-
   public static capture = new Capture();
   public static auth = new Auth(TikiClient.keyService);
   public static license = new License();
@@ -27,13 +31,14 @@ export default class TikiClient {
     pubKey: string,
     userId: string
   ): Promise<void> {
-    await TikiClient.keyService.clear();
+
+    TikiClient.userId = userId
 
     const keys = await TikiClient.keyService.get();
 
     if (keys.find((key) => key.value.name === `${providerId}.${userId}`))
       throw new Error(
-        "TThe address is already registered for these provider and user IDs."
+        "The address is already registered for these provider and user IDs."
       );
 
     await TikiClient.auth.registerAddress(providerId, pubKey, userId);
@@ -45,13 +50,11 @@ export default class TikiClient {
    * Also utilizes the license module to verify if the provided license is valid.
    * @param {string} providerId - the provider ID of the associated provider account.
    * @param {string} userId - The user ID to link the receipt to their information.
-   * @param {PostGuardRequest} licenseReq - the License pointer record and use cases to verify if the license is valid.
    * @param {string} requestId - a UUID string to identify the location of the pictures that are sent.
    */
   public static async scan(
     providerId: string,
     userId: string,
-    licenseReq: PostGuardRequest,
     requestId?: string
   ) {
     const keys: SavedKey[] = await TikiClient.keyService.get();
@@ -79,7 +82,19 @@ export default class TikiClient {
     );
 
     if (!addressToken) throw new Error("Error to get Address Token");
-
+    const licenseReq: PostGuardRequest = {
+      ptr: userId,
+      uses: [
+        {
+          usecases: [
+            {
+              value: "ATRIBUTION",
+            },
+          ],
+          destinations: ["*"],
+        },
+      ],
+    };
     const verifyLicense: RspGuard = await TikiClient.license.guard(
       licenseReq,
       addressToken!
@@ -99,9 +114,13 @@ export default class TikiClient {
    * @param {string} providerId - the provider ID of the associated provider account.
    * @param {string} userId - The user ID to link the receipt to their information.
    * @param {PostLicenseRequest} licenseReq - The object that contains the license information
-   * @returns 
+   * @returns
    */
-  public static async createLicense(providerId: string, userId: string, licenseReq: PostLicenseRequest): Promise<PostLicenseRequest>{
+  public static async createLicense(
+    providerId: string,
+    userId: string,
+    licenseReq: PostLicenseRequest
+  ): Promise<PostLicenseRequest> {
     const keys: SavedKey[] = await TikiClient.keyService.get();
 
     const key: SavedKey | undefined = keys.find(
@@ -126,8 +145,9 @@ export default class TikiClient {
       address
     );
 
-    if(!addressToken) throw new Error('It was not possible to get the token, try to inialize!')
-    
-    return await TikiClient.license.create(addressToken, licenseReq)
+    if (!addressToken)
+      throw new Error("It was not possible to get the token, try to inialize!");
+
+    return await TikiClient.license.create(addressToken, licenseReq);
   }
 }

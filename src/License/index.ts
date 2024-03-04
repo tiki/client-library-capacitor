@@ -1,5 +1,5 @@
 import Utils from "../utils";
-import * as types from './types'
+import {PostGuardRequest, PostLicenseRequest, RspLicenses, RspGuard, } from './types'
 
 export default class License {
   private baseUrl: string =
@@ -14,10 +14,10 @@ export default class License {
    */
   public async create(
     token: string,
-    postLicenseRequest: types.PostLicenseRequest
-  ): Promise<types.PostLicenseRequest> {
+    postLicenseRequest: PostLicenseRequest
+  ): Promise<PostLicenseRequest> {
     const url = `${this.baseUrl}/${"post"}`;
-    return this.utils.handleRequest<types.PostLicenseRequest>(
+    return this.utils.handleRequest<PostLicenseRequest>(
       url,
       "POST",
       token,
@@ -31,9 +31,9 @@ export default class License {
    * @param {string} token - The address token.
    * @returns {RspLicenses} An object containing an array of licenses and a request ID.
    */
-  public async get(id: string, token: string): Promise<types.RspLicenses> {
+  public async get(id: string, token: string): Promise<RspLicenses> {
     const url = `${this.baseUrl}/${"get"}?id=${id}`;
-    return this.utils.handleRequest<types.RspLicenses>(url, "GET", token);
+    return this.utils.handleRequest<RspLicenses>(url, "GET", token);
   }
 
   /**
@@ -43,11 +43,11 @@ export default class License {
    * @returns {RspGuard} - An object containing a boolean and a reason message to confirm the validation or not
    */
   public async guard(
-    postGuardRequest: types.PostGuardRequest,
+    postGuardRequest: PostGuardRequest,
     token: string
-  ): Promise<types.RspGuard> {
+  ): Promise<RspGuard> {
     const url = `${this.baseUrl}/post`;
-    return this.utils.handleRequest<types.RspGuard>(
+    return this.utils.handleRequest<RspGuard>(
       url,
       "POST",
       token,

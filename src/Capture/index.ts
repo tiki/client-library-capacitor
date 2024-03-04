@@ -39,7 +39,7 @@ export default class Capture {
 
     for (const image of images) {
       const body = Utils.base64toBlob(image.base64String!, "image/jpeg");
-      const url = `${this.publishUrl}?id=${id}`;
+      const url = `${this.publishUrl}/id/${id}`;
 
       const response = await fetch(url, {
         method: "PUT",

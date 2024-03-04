@@ -4,7 +4,7 @@ import { RegisterAddressRsp } from "./types";
 
 export default class Auth {
   private keyService: KeyService;
-  private getTokenUrl: string = 'https://account.mytiki.com/api/latest/auth/token';
+  private tokenUrl: string = 'https://account.mytiki.com/api/latest/auth/token';
   private registerAddressUrl: string = 'https://account.mytiki.com/api/latest/provider'
 
   constructor(keyService: KeyService) {
@@ -47,7 +47,7 @@ export default class Auth {
       body: new URLSearchParams(data),
     };
     try {
-      const response = await fetch(this.getTokenUrl, requestOptions);
+      const response = await fetch(this.tokenUrl, requestOptions);
 
       if (!response.ok) {
         throw new Error(
