@@ -4,7 +4,6 @@ import License from "./License";
 import KeyService from "./Key";
 import Utils from "./utils";
 import { Photo } from "@capacitor/camera";
-import { SavedKey } from "./Key/types";
 import type {
   PostGuardRequest,
   RspGuard,

@@ -1,3 +1,3 @@
 import Config from "./config";
 
-export {Config}
+export type {Config}
