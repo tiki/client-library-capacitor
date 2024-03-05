@@ -1,10 +1,11 @@
 import { Config } from "./Config";
-import TikiClient from "./TikiClient";
-import Vue from "vue";
+import _TikiClient from "./TikiClient";
 
 export default {
-  install: function(vue: Vue, config: Config) {
-    TikiClient.configuration(config)
-    Object.defineProperty(vue, "TikiClient", { value: TikiClient });
+  install: function(options: Config) {
+    console.log( "running install")
+    _TikiClient.configuration(options)
   }
 }
+
+export const TikiClient = _TikiClient
