@@ -17,8 +17,10 @@ export default class KeyService {
   }
 
   /**
-   * Uses the Key Repository to list all saved keys pairs
-   * @returns - key repository list function
+   * Uses the Key Repository to get the KeyPair
+   * @param {string} providerId - the providerId of the saved key pair, used to identify the name value and find the correct entry.
+   * @param {string} userId - the userId of the saved key pair, used to identify the name value and find the correct entry.
+   * @returns {SavedKey | undefined} - returns the key object if it's saved or undefined.
    */
   public async get(providerId: string, userId: string): Promise<SavedKey | undefined> {
     const keys: SavedKey[] =  await this.repository.list();

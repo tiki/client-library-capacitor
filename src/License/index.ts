@@ -61,12 +61,20 @@ export default class License {
     );
   }
 
-  public async terms(
+  /**
+   * Generate an agreement based on Tiki User Data License Agreement.
+   * @param companyName - The Name of the company to be replaced in the UDLA.
+   * @param jurisdiction - The current jurisdiction of the company to be replaced in the UDLA.
+   * @param tosUrl - An URL to the Terms of Service of the company.
+   * @param privacyUrl - An URL to the Privacy Policy of the company.
+   * @returns {string} - The  User Data License Agreement with the info that were inputed.
+   */
+  public terms(
     companyName: string,
     jurisdiction: string,
     tosUrl: string,
     privacyUrl: string
-  ) {
+  ): string {
     const modifiedContent = Utils.modifyMarkdownContent(terms, {
       "{{{COMPANY}}}": companyName,
       "{{{JURISDICTION}}": jurisdiction,
