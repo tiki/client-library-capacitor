@@ -4,16 +4,17 @@ import License from "./License";
 import KeyService from "./Key";
 import Utils from "./utils";
 import { Photo } from "@capacitor/camera";
-import { SavedKey } from "./Key/types";
 import type {
   PostGuardRequest,
   RspGuard,
   PostLicenseRequest,
-} from "./License/types";
+} from "./License/types/index";
+import { Config } from "./Config";
 
 export default class TikiClient {
-  private static userId: string = '';
+  private static userId: string = "";
   private static keyService = new KeyService();
+  private static config: Config;
   public static capture = new Capture();
   public static auth = new Auth(TikiClient.keyService);
   public static license = new License();
@@ -22,45 +23,38 @@ export default class TikiClient {
 
   /**
    * Initialize the TikiClient and register the device's address.
-   * @param {string} providerId - the provider ID of the associated provider account.
-   * @param {string} pubKey - the public key of the created provider.
    * @param {string} userId - the ID to be registered to identify the user.
    */
-  public static async initialize(
-    providerId: string,
-    pubKey: string,
-    userId: string
-  ): Promise<void> {
+  public static async initialize(userId: string): Promise<void> {
+    TikiClient.userId = userId;
 
-    TikiClient.userId = userId
+    const key = await TikiClient.keyService.get(
+      TikiClient.config.providerId,
+      TikiClient.userId
+    );
 
-    const keys = await TikiClient.keyService.get();
-
-    if (keys.find((key) => key.value.name === `${providerId}.${userId}`))
+    if (!key)
       throw new Error(
         "The address is already registered for these provider and user IDs."
       );
 
-    await TikiClient.auth.registerAddress(providerId, pubKey, userId);
+    await TikiClient.auth.registerAddress(
+      TikiClient.config.providerId,
+      TikiClient.config.publicKey,
+      userId
+    );
   }
 
   /**
    * Capture a picture and send it to Tiki.
    * Uses the capture module to take the photo and publish it to Tiki.
    * Also utilizes the license module to verify if the provided license is valid.
-   * @param {string} providerId - the provider ID of the associated provider account.
-   * @param {string} userId - The user ID to link the receipt to their information.
    * @param {string} requestId - a UUID string to identify the location of the pictures that are sent.
    */
-  public static async scan(
-    providerId: string,
-    userId: string,
-    requestId?: string
-  ) {
-    const keys: SavedKey[] = await TikiClient.keyService.get();
-
-    const key: SavedKey | undefined = keys.find(
-      (key) => key.value.name === `${providerId}.${userId}`
+  public static async scan(requestId?: string) {
+    const key = await TikiClient.keyService.get(
+      TikiClient.config.providerId,
+      TikiClient.userId
     );
 
     if (!key) throw new Error("Key Pair not found, try to initialize");
@@ -75,7 +69,7 @@ export default class TikiClient {
     );
 
     const addressToken: string | undefined = await TikiClient.auth.getToken(
-      providerId,
+      TikiClient.config.providerId,
       signature,
       [],
       address
@@ -83,7 +77,7 @@ export default class TikiClient {
 
     if (!addressToken) throw new Error("Error to get Address Token");
     const licenseReq: PostGuardRequest = {
-      ptr: userId,
+      ptr: TikiClient.userId,
       uses: [
         {
           usecases: [
@@ -111,20 +105,12 @@ export default class TikiClient {
 
   /**
    * Create a license to publish data to Tiki
-   * @param {string} providerId - the provider ID of the associated provider account.
-   * @param {string} userId - The user ID to link the receipt to their information.
-   * @param {PostLicenseRequest} licenseReq - The object that contains the license information
    * @returns
    */
-  public static async createLicense(
-    providerId: string,
-    userId: string,
-    licenseReq: PostLicenseRequest
-  ): Promise<PostLicenseRequest> {
-    const keys: SavedKey[] = await TikiClient.keyService.get();
-
-    const key: SavedKey | undefined = keys.find(
-      (key) => key.value.name === `${providerId}.${userId}`
+  public static async createLicense(): Promise<PostLicenseRequest> {
+    const key = await TikiClient.keyService.get(
+      TikiClient.config.providerId,
+      TikiClient.userId
     );
 
     if (!key) throw new Error("Key Pair not found, try to initialize");
@@ -139,7 +125,7 @@ export default class TikiClient {
     );
 
     const addressToken: string | undefined = await TikiClient.auth.getToken(
-      providerId,
+      TikiClient.config.providerId,
       signature,
       [],
       address
@@ -147,7 +133,33 @@ export default class TikiClient {
 
     if (!addressToken)
       throw new Error("It was not possible to get the token, try to inialize!");
-
+    const licenseReq: PostLicenseRequest = {
+      ptr: TikiClient.userId,
+      tags: ["purchase_history"],
+      uses: [
+        {
+          usecases: [
+            {
+              value: "attribution",
+            },
+          ],
+          destinations: ["*"],
+        },
+      ],
+      licenseDesc: "",
+      expiry: undefined,
+      titleDesc: undefined,
+      terms: await TikiClient.license.terms(
+        TikiClient.config.companyName,
+        TikiClient.config.companyJurisdiction,
+        TikiClient.config.tosUrl,
+        TikiClient.config.privacyUrl
+      ),
+    };
     return await TikiClient.license.create(addressToken, licenseReq);
+  }
+
+  public static configuration(configuration: Config) {
+    TikiClient.config = configuration;
   }
 }

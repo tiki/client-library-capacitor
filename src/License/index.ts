@@ -1,5 +1,11 @@
 import Utils from "../utils";
-import {PostGuardRequest, PostLicenseRequest, RspLicenses, RspGuard, } from './types'
+import {
+  PostGuardRequest,
+  PostLicenseRequest,
+  RspLicenses,
+  RspGuard,
+} from "./types/index";
+import terms from '../assets/terms.md?raw';
 
 export default class License {
   private baseUrl: string =
@@ -53,5 +59,20 @@ export default class License {
       token,
       postGuardRequest
     );
+  }
+
+  public async terms(
+    companyName: string,
+    jurisdiction: string,
+    tosUrl: string,
+    privacyUrl: string
+  ) {
+    const modifiedContent = Utils.modifyMarkdownContent(terms, {
+      "{{{COMPANY}}}": companyName,
+      "{{{JURISDICTION}}": jurisdiction,
+      "{{{TOS}}}": tosUrl,
+      "{{{POLICY}}}": privacyUrl,
+    });
+    return modifiedContent
   }
 }

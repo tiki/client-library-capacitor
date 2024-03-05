@@ -1,6 +1,7 @@
 import { sha3_256 } from "js-sha3";
 import Utils from "../utils";
 import KeyRepository from "./repository";
+import { SavedKey } from "./types";
 
 export default class KeyService {
   private repository: KeyRepository = new KeyRepository();
@@ -19,8 +20,11 @@ export default class KeyService {
    * Uses the Key Repository to list all saved keys pairs
    * @returns - key repository list function
    */
-  public get() {
-    return this.repository.list();
+  public async get(providerId: string, userId: string): Promise<SavedKey | undefined> {
+    const keys: SavedKey[] =  await this.repository.list();
+    return keys.find(
+      (key) => key.value.name === `${providerId}.${userId}`
+    )
   }
 
   /**

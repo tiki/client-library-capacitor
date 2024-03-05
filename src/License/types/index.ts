@@ -7,4 +7,4 @@ import { Title } from "./Title";
 import { Use } from "./Use";
 import { Usecase } from "./Usecase";
 
-export {License, PostGuardRequest, PostLicenseRequest, RspGuard, RspLicenses, Title, Use, Usecase}
+export type {License, PostGuardRequest, PostLicenseRequest, RspGuard, RspLicenses, Title, Use, Usecase}
