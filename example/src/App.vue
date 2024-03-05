@@ -7,15 +7,12 @@
 
 <script>
 import HelloWorld from './components/HelloWorld.vue'
-import { TikiClient } from "@mytiki/publish-client-capacitor"
 export default {
   name: 'App',
   components: {
     HelloWorld
   }
 }
-
-TikiClient.initialize("otheruser")
 </script>
 
 <style>

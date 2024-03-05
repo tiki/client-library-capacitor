@@ -4,7 +4,14 @@ import TikiPlugin from "@mytiki/publish-client-capacitor"
 
 Vue.config.productionTip = false
 
-Vue.use(TikiPlugin)
+Vue.use(TikiPlugin, {
+  providerId: "prov-id",
+  publicKey: "pubkey",
+  companyName: "ACME Inc",
+  companyJurisdiction: "Nashville, TN",
+  tosUrl: "https://acme.inc/tos",
+  privacyUrl: "https://acme.inc/privacy"
+})
 
 new Vue({
   render: h => h(App),
