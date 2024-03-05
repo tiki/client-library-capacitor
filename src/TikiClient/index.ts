@@ -141,10 +141,12 @@ export default class TikiClient {
       addressToken!
     );
 
-    if (!verifyLicense || !verifyLicense.success)
+    if (!verifyLicense || !verifyLicense.success) {
       console.error(
         "The License is invalid. Use the TikiClient.license method to issue a new License."
       );
+      return;
+    }
 
     const photos: Photo[] = [await instance.capture.scan()];
     const id = requestId ?? window.crypto.randomUUID();

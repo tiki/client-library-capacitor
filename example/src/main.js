@@ -1,6 +1,8 @@
 import Vue from "vue";
 import App from "./App.vue";
 import TikiPlugin from "@mytiki/publish-client-capacitor";
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
+defineCustomElements(window);
 
 Vue.config.productionTip = false;
 

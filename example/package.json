@@ -8,6 +8,8 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@capacitor/camera": "^5.0.9",
+    "@ionic/pwa-elements": "^3.2.2",
     "@mytiki/publish-client-capacitor": "file:../",
     "core-js": "^3.8.3",
     "vue": "^2.6.14"

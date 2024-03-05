@@ -24,7 +24,6 @@ export default {
   },
   methods: {
     initialize: async function(){
-      console.log(this.userId, window.crypto.randomUUID())
       await TikiClient.initialize(this.userId || window.crypto.randomUUID())
     },
     scan: async function(){
