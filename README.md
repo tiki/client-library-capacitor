@@ -1,14 +1,100 @@
-# TIKI Client Library (Capacitor + Vue.js)
+# TIKI Publish Client Library
 
-The Client Library is a convenient wrapper around our Data Provider APIs to simplify integration with your application.
+### Provider registration
 
-Our Data Provider APIs are a collection of HTTP REST APIs enabling compatibility with any standard HTTP client for sending requests and handling responses. Functioning as a Capacitor Plugin, the Client Library simplifies application integration work with convenient methods for authorization, licensing, capture, and upload.
+The TIKI Data Provider APIs are a collection of HTTP REST APIs used by [Data Providers](https://mytiki.com/reference/overview) to publish data to TIKI enabling compatibility with any standard HTTP client for sending requests and handling responses
+
+The TIKI Publish Client Library simplifies application integration work with convenient methods for authorization, licensing, capture, and upload, reducing the amount of code necessary to connect a web app with TIKI.
 
 ## Getting Started
 
+1. Login in [mytiki.com](https://account.mytiki.com/pages/login) with Gmail, GitHub or any email account.
+2. Use the [Create Provider](https://mytiki.com/reference/account-provider-create) page to create a new provider.
+   1. In the body-params insert a the Provider name.
+   2. Click in the `try it!` button
+3. Copy the providerId and pubKey values from the JSON in the RESPONSE screen. We'll use those values to configure the client.
+
 ### Instalation
 
+To install the TIKI Client library use `npm`:
+
+```bash
+npm install @mytiki/publish-client
+```
+
+#### Capacitor Camera 
+
+The `TikiClient.scan` method uses the [Capacitor Camera Plugin]() to scan receipts. 
+To use this method add the Capacitor Camera dependency: 
+
+```bash
+npm install @capacitor/camera
+```
+
+Capacitor Camera Plugin have web-based UI available when not running natively. The `TikiClient.scan` method will load a responsive photo-taking experience when running on the web.
+
+This UI is implemented using web components. Due the elements being encapsulated by the Shadow DOM, these components should not conflict with your own UI.
+
+To enable these controls, you must add `@ionic/pwa-elements` to your app.
+
+```bash
+npm install @ionic/pwa-elements
+```
+
+Then, depending on your framework of choice, import the element loader and call it at the correct time:
+
+##### React
+
+`main.tsx` or `index.tsx` or `index.js`:
+
+```tsx
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
+
+// Call the element loader before the render call
+defineCustomElements(window);
+```
+
+##### Vue
+
+`main.ts`:
+
+```typescript
+// Above the createApp() line
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
+defineCustomElements(window);
+```
+
+##### Angular
+
+`main.ts`:
+
+```typescript
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
+// Call the element loader before the bootstrapModule/bootstrapApplication call
+defineCustomElements(window);
+if (environment.production) {
+  enableProdMode();
+}
+```
+
+##### Including through script tag
+
+PWA Elements can be included through a script tag in your `index.html`. However, keep in mind this will not work for offline scenarios:
+
+```html
+<script
+  type="module"
+  src="https://unpkg.com/@ionic/pwa-elements@latest/dist/ionicpwaelements/ionicpwaelements.esm.js"
+></script>
+<script
+  nomodule
+  src="https://unpkg.com/@ionic/pwa-elements@latest/dist/ionicpwaelements/ionicpwaelements.js"
+></script>
+```
+
 ### Configuration
+
+The library configuration can be done directly with the TikiClient
 
 ## How to use
 
