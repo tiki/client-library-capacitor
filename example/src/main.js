@@ -10,8 +10,8 @@ Vue.use(TikiPlugin, {
   companyName: "ACME Inc",
   companyJurisdiction: "Nashville, TN",
   tosUrl: "https://acme.inc/tos",
-  privacyUrl: "https://acme.inc/privacy",
-});
+  privacyUrl: "https://acme.inc/privacy"
+})
 
 new Vue({
   render: (h) => h(App),
