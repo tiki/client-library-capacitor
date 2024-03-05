@@ -3,7 +3,6 @@ import Auth from "../Auth";
 import License from "../License";
 import KeyService from "../Key";
 import Utils from "../utils";
-import { Photo } from "@capacitor/camera";
 import type {
   PostGuardRequest,
   RspGuard,
@@ -66,13 +65,25 @@ export default class TikiClient {
     instance.userId = userId;
   }
 
+
+  public static async scan(){
+    let instance = TikiClient.getInstance();
+
+    if (instance.config == undefined) {
+      console.error(
+        "TIKI Client is not configured. Use the TikiClient.configure method to add a configuration."
+      );
+      return;
+    }
+
+    return await instance.capture.scan()
+  }
   /**
    * Capture a picture and send it to Tiki.
    * Uses the capture module to take the photo and publish it to Tiki.
    * Also utilizes the license module to verify if the provided license is valid.
-   * @param {string} requestId - a UUID string to identify the location of the pictures that are sent.
    */
-  public static async scan(requestId?: string) {
+  public static async publish(images: string[]) {
     let instance = TikiClient.getInstance();
 
     if (instance.config == undefined) {
@@ -148,10 +159,7 @@ export default class TikiClient {
       return;
     }
 
-    const photos: Photo[] = [await instance.capture.scan()];
-    const id = requestId ?? window.crypto.randomUUID();
-
-    await instance.capture.publish(photos, id, addressToken);
+    await instance.capture.publish(images, addressToken);
   }
 
   /**

@@ -12,10 +12,11 @@
         <button @click="scan">Scan</button>
       </div> 
       <div>
-        <button @click="takePicture">Take Picture</button>
+        <button @click="publish">Take Picture</button>
       </div> 
       <div>
         <img :src="src" alt="">
+        <figcaption v-if="photos.length > 0">Latest saved photo. total: {{ photos.length }}</figcaption>
       </div>
     </main>
   </div>
@@ -26,19 +27,20 @@ import { TikiClient } from "@mytiki/publish-client-capacitor"
 export default {
   name: "App",
   data: function () {
-    return { userId: "" , src: ""};
+    return { userId: "" , src: "", photos: []};
   },
   methods: {
     initialize: async function(){
       await TikiClient.initialize(this.userId || window.crypto.randomUUID())
     },
     scan: async function(){
-      await TikiClient.createLicense()
-      await TikiClient.scan()
+      const photo = await TikiClient.scan()
+      this.photos.push(photo)
+      this.src = 'data:image/jpeg;charset=utf-8;base64, ' + photo
     },
-    takePicture: async function(){
-      const photo = await TikiClient.getInstance().capture.scan()
-      this.src = 'data:image/jpeg;charset=utf-8;base64, ' + photo.base64String
+    publish: async function(){
+      await TikiClient.createLicense()
+      await TikiClient.publish(this.photos)
     }
   }
 };
