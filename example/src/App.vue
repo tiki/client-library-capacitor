@@ -9,7 +9,7 @@
         <button @click="initialize">Initialize</button>
       </div>
       <div>
-        <button>Scan</button>
+        <button @click="scan">Scan</button>
       </div> 
     </main>
   </div>
@@ -23,9 +23,13 @@ export default {
     return { userId: "" };
   },
   methods: {
-    initialize: function(){
+    initialize: async function(){
       console.log(this.userId, window.crypto.randomUUID())
-      TikiClient.initialize(this.userId || window.crypto.randomUUID())
+      await TikiClient.initialize(this.userId || window.crypto.randomUUID())
+    },
+    scan: async function(){
+      await TikiClient.createLicense()
+      await TikiClient.scan()
     }
   }
 };

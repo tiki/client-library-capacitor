@@ -4,8 +4,9 @@ import { RegisterAddressRsp } from "./types";
 
 export default class Auth {
   private keyService: KeyService;
-  private tokenUrl: string = 'https://account.mytiki.com/api/latest/auth/token';
-  private registerAddressUrl: string = 'https://account.mytiki.com/api/latest/provider'
+  private tokenUrl: string = "https://account.mytiki.com/api/latest/auth/token";
+  private registerAddressUrl: string =
+    "https://account.mytiki.com/api/latest/provider";
 
   constructor(keyService: KeyService) {
     this.keyService = keyService;
@@ -25,7 +26,6 @@ export default class Auth {
     scopes: Array<string>,
     address?: string
   ): Promise<string | undefined> {
-
     const data = {
       grant_type: "client_credentials",
       client_id:
@@ -50,9 +50,10 @@ export default class Auth {
       const response = await fetch(this.tokenUrl, requestOptions);
 
       if (!response.ok) {
-        throw new Error(
+        console.error(
           `HTTP error! Status: ${response.status}, message: ${response.json()}`
         );
+        return
       }
 
       const responseData = await response.json();
@@ -60,7 +61,8 @@ export default class Auth {
       const { access_token } = responseData;
       return access_token;
     } catch (error) {
-      throw new Error(`Error fetching token: ${error}`);
+      console.error(`Error fetching token: ${error}`);
+      return
     }
   }
 
@@ -75,26 +77,37 @@ export default class Auth {
     providerId: string,
     pubKey: string,
     userId: string
-  ): Promise<string> {
+  ): Promise<string | void> {
     const accessToken = await this.getToken(providerId, pubKey, [
       "account:provider",
     ]);
-    if (!accessToken)
-      throw new Error("Error generating the provider accessToken");
+    if (!accessToken) {
+      console.error("Error generating the provider accessToken");
+      return;
+    }
 
     const keyPair = await this.keyService.generateKey();
-    if (!keyPair) throw new Error("Error generating key pair");
+    if (!keyPair) {
+      console.error("Error generating key pair");
+      return;
+    }
 
     const address = Utils.arrayBufferToBase64Url(
       await this.keyService.address(keyPair)
     );
-    if (!address) throw new Error("Error generating address");
+    if (!address) {
+      console.error("Error generating address");
+      return;
+    }
 
     const signature = await Utils.signMessage(
       userId + "." + address,
       keyPair.privateKey
     );
-    if (!signature) throw new Error("Error generating signature");
+    if (!signature) {
+      console.error("Error generating signature");
+      return;
+    }
 
     const publicKey = Utils.base64Encode(
       new Uint8Array(await Utils.exportKeyPairToBuffer(keyPair))
@@ -124,13 +137,14 @@ export default class Auth {
         keyPair.privateKey,
         `${providerId}.${userId}`
       );
-      if (addressResponse.address !== address)
-        throw new Error("Error registering user. Mismatching user Addresses");
+      if (addressResponse.address !== address) {
+        console.error("Error registering user. Mismatching user Addresses");
+        return;
+      }
       return addressResponse.address;
     } else {
-      throw new Error(
-        "Error registering user. HTTP status: " + response.status
-      );
+      console.error("Error registering user. HTTP status: " + response.status);
+      return
     }
   }
 }
