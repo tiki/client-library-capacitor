@@ -30,7 +30,7 @@ export default class Capture {
    * @param {string} [requestId] - Optional unique identifier for the request.
    * @returns {Promise<string>} A Promise that resolves with the ID of the request.
    */
-  public async publish(images: Photo[], requestId: string, token: string): Promise<string> {
+  public async publish(images: Photo[], requestId: string, token: string): Promise<string | void> {
     const id = requestId ?? window.crypto.randomUUID();
 
     const headers = new Headers();
@@ -48,7 +48,8 @@ export default class Capture {
       });
 
       if (!response.ok) {
-        throw new Error(`Error uploading files. Status: ${response.status}`);
+        console.error(`Error uploading files. Status: ${response.status}`);
+        return
       }
     }
 
