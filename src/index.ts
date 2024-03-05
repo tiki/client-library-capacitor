@@ -8,4 +8,4 @@ export default {
   }
 }
 
-export const TikiClient = _TikiClient
+export const TikiClient = _TikiClient.getInstance()
