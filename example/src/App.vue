@@ -11,6 +11,12 @@
       <div>
         <button @click="scan">Scan</button>
       </div> 
+      <div>
+        <button @click="takePicture">Take Picture</button>
+      </div> 
+      <div>
+        <img :src="src" alt="">
+      </div>
     </main>
   </div>
 </template>
@@ -20,7 +26,7 @@ import { TikiClient } from "@mytiki/publish-client-capacitor"
 export default {
   name: "App",
   data: function () {
-    return { userId: "" };
+    return { userId: "" , src: ""};
   },
   methods: {
     initialize: async function(){
@@ -29,6 +35,10 @@ export default {
     scan: async function(){
       await TikiClient.createLicense()
       await TikiClient.scan()
+    },
+    takePicture: async function(){
+      const photo = await TikiClient.getInstance().capture.scan()
+      this.src = 'data:image/jpeg;charset=utf-8;base64, ' + photo.base64String
     }
   }
 };
@@ -59,5 +69,9 @@ button{
   background-color: #00B272;
   color: white;
   border-radius: 0.5em;
+}
+
+img{
+  width: 300px;
 }
 </style>
