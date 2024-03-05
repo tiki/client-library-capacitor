@@ -6,7 +6,7 @@ export default class Capture {
 
   /**
    * Uses Capacitor to capture a picture with the device's camera or select a photo from the gallery.
-   * @returns {Photo} with the image saved as base64-encoded string representing the photo.
+   * @returns {string} with the image saved as base64-encoded string representing the photo.
    */
   public async scan(): Promise<string | undefined> {
     const permissions = await Camera.checkPermissions();
