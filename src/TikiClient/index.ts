@@ -12,37 +12,57 @@ import type {
 import { Config } from "../Config";
 
 export default class TikiClient {
-  private static userId: string = "";
-  private static keyService = new KeyService();
-  private static config: Config;
-  public static capture = new Capture();
-  public static auth = new Auth(TikiClient.keyService);
-  public static license = new License();
+  private static instance: TikiClient;
+
+  private userId: string | undefined;
+  private config: Config | undefined;
+  private keyService = new KeyService();
 
   private constructor() {}
+
+  public auth: Auth = new Auth(this.keyService);
+  public capture = new Capture();  
+  public license = new License();
+  
+  /**
+   * Get the singleton instance of TikiClient.
+   * 
+   * @returns TikiClient
+   */
+  public static getInstance(): TikiClient {
+    if (!TikiClient.instance) {
+      TikiClient.instance = new TikiClient();
+    }
+    return TikiClient.instance;
+  }
 
   /**
    * Initialize the TikiClient and register the device's address.
    * @param {string} userId - the ID to be registered to identify the user.
    */
   public static async initialize(userId: string): Promise<void> {
-    TikiClient.userId = userId;
+  
+   let instance = TikiClient.getInstance()
 
-    const key = await TikiClient.keyService.get(
-      TikiClient.config.providerId,
-      TikiClient.userId
+   if(instance.config == undefined) 
+    throw new Error(
+      "TIKI Client is not configured. Use the TikiClient.configure method to add a configuration."
     );
 
-    if (!key)
-      throw new Error(
-        "The address is already registered for these provider and user IDs."
-      );
-
-    await TikiClient.auth.registerAddress(
-      TikiClient.config.providerId,
-      TikiClient.config.publicKey,
+    const key = await instance.keyService.get(
+      instance.config.providerId,
       userId
     );
+
+    if (!key){
+      await instance.auth.registerAddress(
+        instance.config.providerId,
+        instance.config.publicKey,
+        userId
+      );
+    }
+
+    instance.userId = userId
   }
 
   /**
@@ -52,15 +72,29 @@ export default class TikiClient {
    * @param {string} requestId - a UUID string to identify the location of the pictures that are sent.
    */
   public static async scan(requestId?: string) {
-    const key = await TikiClient.keyService.get(
-      TikiClient.config.providerId,
-      TikiClient.userId
+
+    let instance = TikiClient.getInstance()
+
+    if(instance.config == undefined) 
+      throw new Error(
+        "TIKI Client is not configured. Use the TikiClient.configure method to add a configuration."
+      );
+    
+    if(instance.userId == undefined) 
+      throw new Error(
+        "User id not defined. Use the TikiClient.initialize method to register the user."
+      );
+
+    const key = await instance.keyService.get(
+      instance.config.providerId,
+      instance.userId
     );
 
-    if (!key) throw new Error("Key Pair not found, try to initialize");
+    if (!key) 
+      throw new Error("Key Pair not found. Use the TikiClient.initialize method to register the user.");
 
     const address: string = Utils.arrayBufferToBase64Url(
-      await TikiClient.keyService.address(key.value)
+      await instance.keyService.address(key.value)
     );
 
     const signature: string = await Utils.generateSignature(
@@ -68,39 +102,42 @@ export default class TikiClient {
       key?.value.privateKey
     );
 
-    const addressToken: string | undefined = await TikiClient.auth.getToken(
-      TikiClient.config.providerId,
+    const addressToken: string | undefined = await instance.auth.getToken(
+      instance.config.providerId,
       signature,
       [],
       address
     );
 
-    if (!addressToken) throw new Error("Error to get Address Token");
+    if (!addressToken) 
+      throw new Error("Failed to get Address Token");
+
     const licenseReq: PostGuardRequest = {
-      ptr: TikiClient.userId,
+      ptr:instance.userId,
       uses: [
         {
           usecases: [
             {
-              value: "ATRIBUTION",
+              value: "attribution",
             },
           ],
           destinations: ["*"],
         },
       ],
     };
-    const verifyLicense: RspGuard = await TikiClient.license.guard(
+
+    const verifyLicense: RspGuard = await instance.license.guard(
       licenseReq,
       addressToken!
     );
 
     if (!verifyLicense || !verifyLicense.success)
-      throw new Error("Unverified License");
+      throw new Error("The License is invalid. Use the TikiClient.license method to issue a new License.");
 
-    const photos: Photo[] = [await TikiClient.capture.scan()];
+    const photos: Photo[] = [await instance.capture.scan()];
     const id = requestId ?? window.crypto.randomUUID();
 
-    await this.capture.publish(photos, id, addressToken);
+    await instance.capture.publish(photos, id, addressToken);
   }
 
   /**
@@ -108,15 +145,29 @@ export default class TikiClient {
    * @returns
    */
   public static async createLicense(): Promise<PostLicenseRequest> {
-    const key = await TikiClient.keyService.get(
-      TikiClient.config.providerId,
-      TikiClient.userId
+    
+    let instance = TikiClient.getInstance()
+
+    if(instance.config == undefined) 
+      throw new Error(
+        "TIKI Client is not configured. Use the TikiClient.configure method to add a configuration."
+      );
+    
+    if(instance.userId == undefined) 
+      throw new Error(
+        "User id not defined. Use the TikiClient.initialize method to register the user."
+      );
+
+    const key = await instance.keyService.get(
+      instance.config.providerId,
+      instance.userId
     );
 
-    if (!key) throw new Error("Key Pair not found, try to initialize");
+    if (!key) 
+    throw new Error("Key Pair not found. Use the TikiClient.initialize method to register the user.");
 
     const address: string = Utils.arrayBufferToBase64Url(
-      await TikiClient.keyService.address(key.value)
+      await instance.keyService.address(key.value)
     );
 
     const signature: string = await Utils.generateSignature(
@@ -124,8 +175,8 @@ export default class TikiClient {
       key?.value.privateKey
     );
 
-    const addressToken: string | undefined = await TikiClient.auth.getToken(
-      TikiClient.config.providerId,
+    const addressToken: string | undefined = await instance.auth.getToken(
+      instance.config.providerId,
       signature,
       [],
       address
@@ -133,8 +184,9 @@ export default class TikiClient {
 
     if (!addressToken)
       throw new Error("It was not possible to get the token, try to inialize!");
+
     const licenseReq: PostLicenseRequest = {
-      ptr: TikiClient.userId,
+      ptr:instance.userId,
       tags: ["purchase_history"],
       uses: [
         {
@@ -149,17 +201,20 @@ export default class TikiClient {
       licenseDesc: "",
       expiry: undefined,
       titleDesc: undefined,
-      terms: await TikiClient.license.terms(
-        TikiClient.config.companyName,
-        TikiClient.config.companyJurisdiction,
-        TikiClient.config.tosUrl,
-        TikiClient.config.privacyUrl
+      terms: await instance.license.terms(
+        instance.config.companyName,
+        instance.config.companyJurisdiction,
+        instance.config.tosUrl,
+        instance.config.privacyUrl
       ),
     };
-    return await TikiClient.license.create(addressToken, licenseReq);
+    return await instance.license.create(addressToken, licenseReq);
   }
 
   public static configuration(configuration: Config) {
-    TikiClient.config = configuration;
+    console.log(configuration)
+    let instance = TikiClient.getInstance()
+    instance.config = configuration;
+    console.log(instance.config)
   }
 }
