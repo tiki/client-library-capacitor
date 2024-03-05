@@ -235,9 +235,7 @@ export default class TikiClient {
   }
 
   public static configuration(configuration: Config) {
-    console.log(configuration);
     let instance = TikiClient.getInstance();
     instance.config = configuration;
-    console.log(instance.config);
   }
 }
