@@ -1,10 +1,18 @@
 import { SplashScreen } from '@capacitor/splash-screen'
-import TikiClient from 'publish-client-capacitor'
+import TikiClient from '../../..';
+
+Vue.use(TikiClient, {
+  providerId: "the-provider-id",
+  publicKey: "the-public-key",
+  companyName: "ACME Inc",
+  companyJurisdiction: "Nashville, TN",
+  tosUrl: "https://acme.inc/tos",
+  privacyUrl: "https://acme.inc/privacy"
+})
 
 window.customElements.define(
   'capacitor-welcome',
   class extends HTMLElement {
-    TikiClient = new TikiClient()
     constructor() {
       super()
 
@@ -139,16 +147,12 @@ window.customElements.define(
           }
         ],
       }
-
-      const providerId = ''
-      const userId = 'someUserID'
-      const pubKey = ''
       let photos = []
       self.shadowRoot
         .querySelector('#take-photo')
         .addEventListener('click', async function (e) {
           try {
-             let photo = await self.TikiClient.capture.scan()
+            let photo = await this.$tiki.capture.scan()
 
             console.log(photo)
             let img = document.createElement('img')
@@ -164,11 +168,11 @@ window.customElements.define(
 
 
       self.shadowRoot.querySelector('#publish-photo').addEventListener('click', async function (e) {
-         const response =  await self.TikiClient.capture.publish(photos)
+        const response = await this.$tiki.capture.publish(photos)
       })
       self.shadowRoot.querySelector('#register-address').addEventListener('click', async function (e) {
         try {
-          await self.TikiClient.auth.registerAddress(providerId, pubKey, userId)
+          await this.$tiki.auth.registerAddress(providerId, pubKey, userId)
 
         } catch (e) {
           console.warn('User cancelled', e)
@@ -176,7 +180,7 @@ window.customElements.define(
       })
       self.shadowRoot.querySelector('#create-license').addEventListener('click', async function (e) {
         try {
-          await self.TikiClient.license.create('token', samplePostLicenseRequest)
+          await this.$tiki.license.create('token', samplePostLicenseRequest)
 
         } catch (e) {
           console.warn('User cancelled', e)
@@ -185,7 +189,7 @@ window.customElements.define(
       self.shadowRoot.querySelector('#get-license').addEventListener('click', async function (e) {
         try {
 
-          await self.TikiClient.license.get('ansduashduasd')
+          await this.$tiki.license.get('ansduashduasd')
 
         } catch (e) {
           console.warn('User cancelled', e)
@@ -194,7 +198,7 @@ window.customElements.define(
       self.shadowRoot.querySelector('#verify-license').addEventListener('click', async function (e) {
         try {
 
-          await self.TikiClient.license.guard(sampleGuardRequest)
+          await this.$tiki.license.guard(sampleGuardRequest)
 
         } catch (e) {
           console.warn('User cancelled', e)
@@ -202,7 +206,7 @@ window.customElements.define(
       })
       self.shadowRoot.querySelector('#initialize-client').addEventListener('click', async function (e) {
         try {
-          await self.TikiClient.initialize(providerId, pubKey, userId)
+          await this.$tiki.initialize(providerId, pubKey, userId)
 
         } catch (e) {
           console.warn('User cancelled', e)
@@ -210,8 +214,8 @@ window.customElements.define(
       })
       self.shadowRoot.querySelector('#scan-method').addEventListener('click', async function (e) {
         try {
-        
-          await self.TikiClient.scan(providerId, userId, pubKey)
+
+          await this.$tiki.scan(providerId, userId, pubKey)
 
         } catch (e) {
           console.warn('User cancelled', e)
