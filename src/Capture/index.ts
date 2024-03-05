@@ -1,5 +1,4 @@
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
-import type { Photo } from "@capacitor/camera";
 import Utils from "../utils";
 
 export default class Capture {
@@ -9,19 +8,21 @@ export default class Capture {
    * Uses Capacitor to capture a picture with the device's camera or select a photo from the gallery.
    * @returns {Photo} with the image saved as base64-encoded string representing the photo.
    */
-  public async scan(): Promise<Photo> {
+  public async scan(): Promise<string | undefined> {
     const permissions = await Camera.checkPermissions();
 
     if (permissions.camera === "denied" || permissions.photos === "denied") {
       await Camera.requestPermissions();
     }
 
-    return await Camera.getPhoto({
+    const photo = await Camera.getPhoto({
       quality: 100,
       allowEditing: true,
       resultType: CameraResultType.Base64,
       source: CameraSource.Camera,
     });
+
+    return photo.base64String
   }
 
   /**
@@ -30,15 +31,15 @@ export default class Capture {
    * @param {string} [requestId] - Optional unique identifier for the request.
    * @returns {Promise<string>} A Promise that resolves with the ID of the request.
    */
-  public async publish(images: Photo[], requestId: string, token: string): Promise<string | void> {
-    const id = requestId ?? window.crypto.randomUUID();
+  public async publish(images: string[], token: string): Promise<string | void> {
+    const id = window.crypto.randomUUID();
 
     const headers = new Headers();
     headers.append("Content-Type", "image/jpeg");
-    headers.append("Authorization", "Bearer" + token);
+    headers.append("Authorization", "Bearer " + token);
 
     for (const image of images) {
-      const body = Utils.base64toBlob(image.base64String!, "image/jpeg");
+      const body = Utils.base64toBlob(image, "image/jpeg");
       const url = `${this.publishUrl}/id/${id}`;
 
       const response = await fetch(url, {
