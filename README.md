@@ -34,7 +34,7 @@ npm install @capacitor/camera
 
 In order to use the camera in iOS, the app must provide the a message that tells the user why the app is requesting access to the device’s camera. This is done by setting up the `NSCameraUsageDescription` in the `info.plist`.
 
-```
+```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -44,6 +44,16 @@ In order to use the camera in iOS, the app must provide the a message that tells
 	<string>The camera is used to scan physical receipts</string>
 </dict>
 </plist>
+```
+
+#### Android
+
+To use the camera in Android, add the following permissions be added to your `AndroidManifest.xml`:
+
+```xml
+<uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32"/>
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29"/>
 ```
 
 #### Web Applications
