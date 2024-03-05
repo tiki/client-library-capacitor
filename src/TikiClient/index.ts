@@ -25,7 +25,7 @@ export default class TikiClient {
    * Initialize the TikiClient and register the device's address.
    * @param {string} userId - the ID to be registered to identify the user.
    */
-  public static async initialize(userId: string): Promise<void> {
+  public static async initialize(userId: string): Promise<string | void> {
     TikiClient.userId = userId;
 
     const key = await TikiClient.keyService.get(
@@ -33,11 +33,9 @@ export default class TikiClient {
       TikiClient.userId
     );
 
-    if (!key)
-      throw new Error(
-        "The address is already registered for these provider and user IDs."
-      );
-
+    if (key)
+      return "The address is already registered for these provider and user IDs.";
+    
     await TikiClient.auth.registerAddress(
       TikiClient.config.providerId,
       TikiClient.config.publicKey,
