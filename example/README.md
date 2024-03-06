@@ -14,6 +14,20 @@ This Example App works as a sample of how use our library's main featur
 4. Click the `try it!` button.
 5. Copy the providerId and pubKey values from the JSON in the RESPONSE screen. 
 6. Paste the values into the vue plugin config object inside the main.js file.
+    - Example:
+    ```javascript
+        import Vue from "vue";
+        import TikiPlugin from "@mytiki/publish-client-capacitor";
+
+        Vue.use(TikiPlugin, {
+        providerId: "prov-id",
+        publicKey: "pubkey",
+        companyName: "ACME Inc",
+        companyJurisdiction: "Nashville, TN",
+        tosUrl: "https://acme.inc/tos",
+        privacyUrl: "https://acme.inc/privacy"
+        })
+    ```
 
 ## Using the application
 
