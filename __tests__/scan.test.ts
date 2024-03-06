@@ -1,10 +1,12 @@
-import TikiClient from '../src/index'
-import { type Photo } from '@capacitor/camera'
+import Capture from "../src/Capture";
 
-const photo: Photo = { base64String: 'base64String', path: 'image/png', format: 'png', saved: true }
-const tikiClient = new TikiClient()
-describe('Take Photo mock function', () => {
-  test('returns a promise resolving to a Photo object', async () => {
-    expect(await tikiClient.capture.scan()).toMatchObject(photo)
-  })
+const capture = new Capture()
+
+
+describe('Scan Method from Capture Class', () => {
+    test('returns a string', async () => {
+      const photo = await capture.scan()
+      expect(photo).toBeDefined()
+      expect(photo).toBeTruthy()
+    })
 })

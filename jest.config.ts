@@ -12,7 +12,7 @@ const config: Config = {
     '^.+\\.(ts|tsx)?$': 'ts-jest',
     '^.+\\.(js|jsx)$': 'babel-jest',
   },
-  setupFiles: ["<rootDir>/setup_tests.ts"],
+  setupFiles: ["<rootDir>/setup_tests.ts", "fake-indexeddb/auto"],
 }
 
 export default config
