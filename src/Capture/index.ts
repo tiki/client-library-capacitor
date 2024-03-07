@@ -6,7 +6,7 @@ export default class Capture {
 
   /**
    * Uses Capacitor to capture a picture with the device's camera or select a photo from the gallery.
-   * @returns {string} with the image saved as base64-encoded string representing the photo.
+   * @returns {string} - the base64 string of the captured/selected image
    */
   public async scan(): Promise<string | undefined> {
     const permissions = await Camera.checkPermissions();
@@ -26,10 +26,10 @@ export default class Capture {
   }
 
   /**
-   * Publishes the provided photos to Tiki.
-   * @param {Photo[]} images - Array of photos to be published, each with the format and base64 string.
-   * @param {string} [requestId] - Optional unique identifier for the request.
-   * @returns {Promise<string>} A Promise that resolves with the ID of the request.
+   * Publishes the photos to Tiki.
+   * @param {string[]} images - Array of photos to be published in base64 strings.
+   * @param {string} token - the address token to authenticate the request to our server.
+   * @returns {Promise<string>} A Promise that resolves with the ID of the request or void in case of any error.
    */
   public async publish(images: string[], token: string): Promise<string | void> {
     const id = window.crypto.randomUUID();

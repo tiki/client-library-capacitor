@@ -65,8 +65,11 @@ export default class TikiClient {
     instance.userId = userId;
   }
 
-
-  public static async scan(){
+  /**
+   * Uses the capacitor camera plugin to take a picture
+   * @returns {string | void} - The base64 string of the image or void in case of any error.
+   */
+  public static async scan(): Promise<string | void>{
     let instance = TikiClient.getInstance();
 
     if (instance.config == undefined) {
@@ -79,11 +82,11 @@ export default class TikiClient {
     return await instance.capture.scan()
   }
   /**
-   * Capture a picture and send it to Tiki.
-   * Uses the capture module to take the photo and publish it to Tiki.
-   * Also utilizes the license module to verify if the provided license is valid.
+   * Publish an amount of picture to Tiki Back-end
+   * @param {string[]} images - Receives an array of base64 string of the images which need to be published to Tiki
+   * @returns {Promise<string | void>} - A promise with the request Id of the upload operation or void in case of any error.
    */
-  public static async publish(images: string[]) {
+  public static async publish(images: string[]): Promise<string | void> {
     let instance = TikiClient.getInstance();
 
     if (instance.config == undefined) {
@@ -164,7 +167,7 @@ export default class TikiClient {
 
   /**
    * Create a license to publish data to Tiki
-   * @returns
+   * @returns {Promise<PostLicenseRequest | void>} - The object that contains the license information or void in case of any error.
    */
   public static async createLicense(): Promise<PostLicenseRequest | void> {
     let instance = TikiClient.getInstance();
@@ -242,6 +245,10 @@ export default class TikiClient {
     return await instance.license.create(addressToken, licenseReq);
   }
 
+  /**
+   * Configure the class instance with the company information, necessary to others operations
+   * @param {Config} configuration - The Object that contains the company information to be instantiated.
+   */
   public static configuration(configuration: Config) {
     let instance = TikiClient.getInstance();
     instance.config = configuration;

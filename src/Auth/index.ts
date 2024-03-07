@@ -71,7 +71,7 @@ export default class Auth {
    * @param {string} providerId - The ID of the provider to be associated with the new address.
    * @param {string} pubKey - The public key of the provider.
    * @param {string} userId - The identifier of the address or user to be created.
-   * @returns {string} The address to be used for sending data.
+   * @returns {string | void} The address to be used for sending data or void in case of any error
    */
   async registerAddress(
     providerId: string,
