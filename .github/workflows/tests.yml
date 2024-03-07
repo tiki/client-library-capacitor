@@ -1,0 +1,37 @@
+name: CodeQL
+
+on:
+  pull_request:
+    branches:
+      - main
+      - chore/gh-actions
+  push:
+    branches:
+      -main
+      -chore/gh-actions
+
+# Cancel any active builds when new commits are pushed
+concurrency:
+  group: ${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  tests:
+    name: Analyze Project
+    runs-on: ubuntu-22.04
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+        - name: Run tests
+        id: tests
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm ci
+          npm run test
