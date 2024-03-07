@@ -18,7 +18,8 @@ concurrency:
 
 jobs:
   release:
-    if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'chore/')
+    # if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'chore/')
+    if: startsWith(github.head_ref, 'chore/')
     environment: Production
     runs-on: ubuntu-latest
     outputs:
