@@ -4,8 +4,8 @@ on:
   pull_request:
     branches:
       - main
-    # types:
-    #   - closed
+    types:
+      - closed
 
 permissions:
   contents: write
@@ -18,8 +18,7 @@ concurrency:
 
 jobs:
   release:
-    # if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'chore/')
-    if: startsWith(github.head_ref, 'chore/')
+    if: github.event.pull_request.merged == true && startsWith(github.head_ref, 'chore/')
     environment: Production
     runs-on: ubuntu-latest
     outputs:
@@ -38,29 +37,31 @@ jobs:
           scope: '@mytiki'
 
       - name: Build project
-        run: npm run build
+        run: |
+        npm ci
+        npm run build
 
       - name: Get version
         id: version
         run: echo "current=$(npm pkg get version | tr -d '"')" >> $GITHUB_OUTPUT
 
-      # - name: Publish
-      #   run: npm publish --access public
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      # - name: Setup Pages
-      #   uses: actions/configure-pages@v3
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
 
-      # - name: Build Docs
-      #   run: npm run docs
+      - name: Build Docs
+        run: npm run docs
 
-      # - name: Upload artifact
-      #   uses: actions/upload-pages-artifact@v2
-      #   with:
-      #     path: './docs'
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: './docs'
 
-      # - name: Release
-      #   uses: ncipollo/release-action@v1
-      #   with:
-      #     tag: ${{ steps.version.outputs.current }}
+      - name: Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ steps.version.outputs.current }}
