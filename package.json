@@ -1,6 +1,6 @@
 {
   "name": "@mytiki/publish-client-capacitor",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "main": "./dist/my-lib.umd.cjs",
   "module": "./dist/my-lib.js",
   "types": "./dist/index.d.ts",
