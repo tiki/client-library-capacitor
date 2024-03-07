@@ -4,11 +4,9 @@ on:
   pull_request:
     branches:
       - main
-      - chore/gh-actions
   push:
     branches:
       -main
-      -chore/gh-actions
 
 # Cancel any active builds when new commits are pushed
 concurrency:

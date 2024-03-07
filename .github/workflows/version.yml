@@ -4,8 +4,6 @@ on:
   pull_request:
     branches:
       - main
-      - chore/gh-actions
-
 
 concurrency:
   group: ${{ github.ref }}-${{ github.workflow }}
@@ -13,7 +11,7 @@ concurrency:
 
 jobs:
   version:
-    if: startsWith(github.head_ref, 'chore/')
+    if: startsWith(github.head_ref, 'release/')
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.semver.outputs.nextStrict }}
