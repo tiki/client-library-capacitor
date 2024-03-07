@@ -12,7 +12,7 @@
         <button @click="scan">Scan</button>
       </div> 
       <div>
-        <button @click="publish">Take Picture</button>
+        <button @click="publish">Publish</button>
       </div> 
       <div>
         <img :src="src" alt="">
