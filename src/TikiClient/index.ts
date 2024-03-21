@@ -127,7 +127,7 @@ export default class TikiClient {
     const addressToken: string | undefined = await instance.auth.getToken(
       instance.config.providerId,
       signature,
-      [],
+      ['publish'],
       address
     );
 
