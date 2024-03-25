@@ -219,7 +219,14 @@ export default class TikiClient {
       return;
     }
 
-    const licenseReq: PostLicenseRequest = {
+    const terms: string = instance.license.terms(
+      instance.config.companyName,
+      instance.config.companyJurisdiction,
+      instance.config.tosUrl,
+      instance.config.privacyUrl
+    )
+
+    let licenseReq: PostLicenseRequest = {
       ptr: instance.userId,
       tags: ["purchase_history"],
       uses: [
@@ -235,13 +242,17 @@ export default class TikiClient {
       licenseDesc: "",
       expiry: undefined,
       titleDesc: undefined,
-      terms: await instance.license.terms(
-        instance.config.companyName,
-        instance.config.companyJurisdiction,
-        instance.config.tosUrl,
-        instance.config.privacyUrl
-      ),
+      terms: terms
     };
+
+
+    const licenseSignature = await Utils.signMessage(
+      JSON.stringify(licenseReq),
+      key.value.privateKey
+    );
+
+    licenseReq.userSignature = licenseSignature
+
     return await instance.license.create(addressToken, licenseReq);
   }
 

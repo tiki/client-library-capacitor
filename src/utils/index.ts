@@ -62,7 +62,7 @@ export default class Utils {
   public static async signMessage(
     message: string,
     privateKey: CryptoKey
-  ): Promise<string | null> {
+  ): Promise<string> {
     const signature = await crypto.subtle.sign(
       { name: "RSASSA-PKCS1-v1_5" },
       privateKey,
