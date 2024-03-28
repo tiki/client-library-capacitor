@@ -1,6 +1,4 @@
-import { Usecase } from "./";
-
 export interface Use {
-  usecases: Usecase[];
+  usecases: string[];
   destinations: string[];
 }

@@ -127,7 +127,7 @@ export default class TikiClient {
     const addressToken: string | undefined = await instance.auth.getToken(
       instance.config.providerId,
       signature,
-      ['publish'],
+      ["trail publish"],
       address
     );
 
@@ -140,11 +140,7 @@ export default class TikiClient {
       ptr: instance.userId,
       uses: [
         {
-          usecases: [
-            {
-              value: "attribution",
-            },
-          ],
+          usecases: ["attribution"],
           destinations: ["*"],
         },
       ],
@@ -210,7 +206,7 @@ export default class TikiClient {
     const addressToken: string | undefined = await instance.auth.getToken(
       instance.config.providerId,
       signature,
-      [],
+      ["trail"],
       address
     );
 
@@ -219,29 +215,35 @@ export default class TikiClient {
       return;
     }
 
-    const licenseReq: PostLicenseRequest = {
+    const terms: string = instance.license.terms(
+      instance.config.companyName,
+      instance.config.companyJurisdiction,
+      instance.config.tosUrl,
+      instance.config.privacyUrl
+    )
+
+    let licenseReq: PostLicenseRequest = {
       ptr: instance.userId,
       tags: ["purchase_history"],
       uses: [
         {
-          usecases: [
-            {
-              value: "attribution",
-            },
-          ],
+          usecases: ["attribution"],
           destinations: ["*"],
         },
       ],
-      licenseDesc: "",
+      description: "",
+      origin: "com.mytiki",
       expiry: undefined,
-      titleDesc: undefined,
-      terms: await instance.license.terms(
-        instance.config.companyName,
-        instance.config.companyJurisdiction,
-        instance.config.tosUrl,
-        instance.config.privacyUrl
-      ),
+      terms: terms
     };
+
+    const licenseSignature = await Utils.signMessage(
+      JSON.stringify(licenseReq),
+      key.value.privateKey
+    );
+
+    licenseReq.signature = licenseSignature
+
     return await instance.license.create(addressToken, licenseReq);
   }
 

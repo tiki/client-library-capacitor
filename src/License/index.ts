@@ -23,6 +23,7 @@ export default class License {
     postLicenseRequest: PostLicenseRequest
   ): Promise<PostLicenseRequest> {
     const url = `${this.baseUrl}/${"post"}`;
+    debugger;
     return this.utils.handleRequest<PostLicenseRequest>(
       url,
       "POST",
@@ -38,6 +39,7 @@ export default class License {
    * @returns {RspLicenses} An object containing an array of licenses and a request ID.
    */
   public async get(id: string, token: string): Promise<RspLicenses> {
+    debugger;
     const url = `${this.baseUrl}/${"get"}?id=${id}`;
     return this.utils.handleRequest<RspLicenses>(url, "GET", token);
   }

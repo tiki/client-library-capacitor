@@ -5,9 +5,10 @@ export interface PostLicenseRequest {
     tags: string[]
     uses: Use[]
     terms: string
+    description: string
+    origin: string
     expiry?: string
-    titleDesc?: string
-    licenseDesc: string
+    signature?: string
 }
 
 
