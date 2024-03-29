@@ -1,14 +1,14 @@
-import Capture from "../Capture";
-import Auth from "../Auth";
-import License from "../License";
-import KeyService from "../Key";
+import Capture from "../capture";
+import Auth from "../auth";
+import License from "../license";
+import KeyService from "../key";
 import Utils from "../utils";
 import type {
-  PostGuardRequest,
   RspGuard,
   PostLicenseRequest,
-} from "../License/types/index";
-import { Config } from "../Config";
+} from "../license/types/index";
+import { Config } from "../config";
+
 
 export default class TikiClient {
   private static instance: TikiClient;
@@ -17,7 +17,7 @@ export default class TikiClient {
   private config: Config | undefined;
   private keyService = new KeyService();
 
-  private constructor() {}
+  private constructor() { }
 
   public auth: Auth = new Auth(this.keyService);
   public capture = new Capture();
@@ -69,7 +69,7 @@ export default class TikiClient {
    * Uses the capacitor camera plugin to take a picture
    * @returns {string | void} - The base64 string of the image or void in case of any error.
    */
-  public static async scan(): Promise<string | void>{
+  public static async scan(): Promise<string | void> {
     let instance = TikiClient.getInstance();
 
     if (instance.config == undefined) {
@@ -136,22 +136,11 @@ export default class TikiClient {
       return;
     }
 
-    const licenseReq: PostGuardRequest = {
-      ptr: instance.userId,
-      uses: [
-        {
-          usecases: ["attribution"],
-          destinations: ["*"],
-        },
-      ],
-    };
-
-    const verifyLicense: RspGuard = await instance.license.guard(
-      licenseReq,
+    const verifyLicense: RspGuard = await instance.license.verify(
       addressToken!
     );
 
-    if (!verifyLicense || !verifyLicense.success) {
+    if (!verifyLicense || !verifyLicense.verified) {
       console.error(
         "The License is invalid. Use the TikiClient.license method to issue a new License."
       );
@@ -222,6 +211,8 @@ export default class TikiClient {
       instance.config.privacyUrl
     )
 
+    const appId = "tes";
+
     let licenseReq: PostLicenseRequest = {
       ptr: instance.userId,
       tags: ["purchase_history"],
@@ -232,7 +223,7 @@ export default class TikiClient {
         },
       ],
       description: "",
-      origin: "com.mytiki",
+      origin: appId,
       expiry: undefined,
       terms: terms
     };

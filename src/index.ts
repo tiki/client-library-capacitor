@@ -1,5 +1,5 @@
-import { Config } from "./Config";
-import _TikiClient from "./TikiClient";
+import { Config } from "./config";
+import _TikiClient from "./client";
 
 export default {
   /**
@@ -7,7 +7,7 @@ export default {
    * @param _vue - The vue application instance to install the plugin.
    * @param options - The object that contains the company information necessary to instantiate the class and create license/publish data.
    */
-  install: function(_vue: any, options: Config) {
+  install: function (_vue: any, options: Config) {
     _TikiClient.configuration(options)
   }
 }
