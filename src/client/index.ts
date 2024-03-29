@@ -8,6 +8,7 @@ import type {
   PostLicenseRequest,
 } from "../license/types/index";
 import { Config } from "../config";
+import { App } from "@capacitor/app";
 
 
 export default class TikiClient {
@@ -211,7 +212,7 @@ export default class TikiClient {
       instance.config.privacyUrl
     )
 
-    const appId = "tes";
+    const appId = (await App.getInfo()).id;
 
     let licenseReq: PostLicenseRequest = {
       ptr: instance.userId,
