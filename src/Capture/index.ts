@@ -2,7 +2,7 @@ import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import Utils from "../utils";
 
 export default class Capture {
-  private publishUrl: string = "https://publish.mytiki.com/";
+  private publishUrl: string = "https://publish.mytiki.com";
 
   /**
    * Uses Capacitor to capture a picture with the device's camera or select a photo from the gallery.
@@ -43,7 +43,7 @@ export default class Capture {
       const url = `${this.publishUrl}/receipt/${id}`;
 
       const response = await fetch(url, {
-        method: "PUT",
+        method: "POST",
         body,
         headers,
       });
