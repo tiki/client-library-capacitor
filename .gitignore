@@ -10,3 +10,6 @@ coverage
 
 #typedoc files
 docs
+
+#intelliJ
+.idea
