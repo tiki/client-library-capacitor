@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) TIKI Inc.
+ * MIT license. See LICENSE file in root directory.
+ */
+
 import { sha3_256 } from "js-sha3";
 import Utils from "../utils";
 import KeyRepository from "./repository";

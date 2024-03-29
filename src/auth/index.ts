@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) TIKI Inc.
+ * MIT license. See LICENSE file in root directory.
+ */
+
 import KeyService from "../key/index";
 import Utils from "../utils";
 import { RegisterAddressRsp } from "./types";
