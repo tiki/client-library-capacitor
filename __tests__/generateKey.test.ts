@@ -1,11 +1,11 @@
-import KeyService from "../src/key";
+import KeyService from "../tmp/key";
 
 
 describe('Key Service generate Key process', () => {
-    const keyService = new KeyService()
-    test('generates a key', async () => {
-      const key = await keyService.generateKey()
-      expect(key).toBeTruthy()
-      expect(key).toBeDefined()
-    })
+  const keyService = new KeyService()
+  test('generates a key', async () => {
+    const key = await keyService.generateKey()
+    expect(key).toBeTruthy()
+    expect(key).toBeDefined()
+  })
 })
