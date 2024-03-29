@@ -1,5 +1,5 @@
 import Utils from "../src/utils";
-import KeyService from "../src/Key";
+import KeyService from "../src/key";
 
 describe('Sign Message Unit test', () => {
     test('It should return a string', async () => {

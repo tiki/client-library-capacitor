@@ -1,4 +1,4 @@
-import KeyService from "../src/Key";
+import KeyService from "../src/key";
 
 
 describe('Key Service generate Key process', () => {
