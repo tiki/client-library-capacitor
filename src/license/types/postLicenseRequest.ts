@@ -3,7 +3,7 @@
  * MIT license. See LICENSE file in root directory.
  */
 
-import { Use } from ".";
+import { Use } from "./";
 
 export interface PostLicenseRequest {
   ptr: string
