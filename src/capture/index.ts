@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) TIKI Inc.
+ * MIT license. See LICENSE file in root directory.
+ */
+
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import Utils from "../utils";
 
