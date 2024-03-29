@@ -1,6 +1,6 @@
 {
   "name": "@mytiki/publish-client-capacitor",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "main": "./dist/my-lib.umd.cjs",
   "module": "./dist/my-lib.js",
   "types": "./dist/index.d.ts",
@@ -26,6 +26,7 @@
     "vite-plugin-dts": "^3.7.3"
   },
   "dependencies": {
+    "@capacitor/app": "^5.0.7",
     "@capacitor/camera": "^5.0.9",
     "@peculiar/webcrypto": "^1.4.5",
     "js-sha3": "^0.9.3",
