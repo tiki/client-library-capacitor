@@ -30,7 +30,7 @@
     "@capacitor/camera": "^5.0.9",
     "@peculiar/webcrypto": "^1.4.5",
     "js-sha3": "^0.9.3",
-    "vue": "^2.7.16"
+    "vue": "^3.4.21"
   },
   "files": [
     "dist"
