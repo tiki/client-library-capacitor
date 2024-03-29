@@ -23,14 +23,14 @@
   },
   "include": [
     "src",
-    "tmp/auth",
-    "tmp/capture",
-    "tmp/client",
-    "tmp/config",
-    "tmp/key",
-    "tmp/license",
-    "tmp/utils",
-    "tmp/index.ts",
-    "tmp/vite-env.d.ts"
+    "src/auth",
+    "src/capture",
+    "src/client",
+    "src/config",
+    "src/key",
+    "src/license",
+    "src/utils",
+    "src/index.ts",
+    "src/vite-env.d.ts"
   ]
 }

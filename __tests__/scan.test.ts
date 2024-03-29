@@ -1,4 +1,4 @@
-import Capture from "../tmp/capture";
+import Capture from "../src/capture";
 
 const capture = new Capture()
 
