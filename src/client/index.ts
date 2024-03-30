@@ -15,7 +15,19 @@ import type {
 import { Config } from "../config";
 import { App } from "@capacitor/app";
 
-
+/**
+ * TikiClient is the main interface for interacting with the TIKI services.
+ * 
+ * This class provides methods for authentication, capturing images, licensing, 
+ * and publishing data to the TIKI Data Cloud.
+ * 
+ * It operates as a singleton, ensuring one instance across the application once initialized.
+ * 
+ * Besides this high-level API, internal APIs are available for more customized implementations:
+ * - TikiClient.auth: handles the authentication with TIKI.
+ * - TikiClient.capture: provides methods to capture receipt data.
+ * - TikiClient.license: manages the data licensing.
+ */
 export default class TikiClient {
   private static instance: TikiClient;
 
@@ -87,6 +99,7 @@ export default class TikiClient {
 
     return await instance.capture.scan()
   }
+  
   /**
    * Publish an amount of picture to Tiki Back-end
    * @param {string[]} images - Receives an array of base64 string of the images which need to be published to Tiki

@@ -115,7 +115,7 @@ export default class Auth {
     }
 
     const publicKey = Utils.base64Encode(
-      new Uint8Array(await Utils.exportKeyPairToBuffer(keyPair))
+      new Uint8Array(await Utils.exportPublicKeyToBuffer(keyPair))
     );
 
     const url = `${this.registerAddressUrl}/${providerId}/user`;

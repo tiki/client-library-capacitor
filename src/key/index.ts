@@ -28,7 +28,7 @@ export default class KeyService {
    * @returns {SavedKey | undefined} - returns the key object if it's saved or undefined.
    */
   public async get(providerId: string, userId: string): Promise<SavedKey | undefined> {
-    const keys: SavedKey[] =  await this.repository.list();
+    const keys: SavedKey[] = await this.repository.list();
     return keys.find(
       (key) => key.value.name === `${providerId}.${userId}`
     )
@@ -48,7 +48,7 @@ export default class KeyService {
    * @returns {Promise<ArrayBuffer>} The hashed key pair as an ArrayBuffer.
    */
   async address(keyPair: CryptoKeyPair): Promise<ArrayBuffer> {
-    const buffer = await Utils.exportKeyPairToBuffer(keyPair);
+    const buffer = await Utils.exportPublicKeyToBuffer(keyPair);
     const digest = sha3_256.digest(buffer);
     return new Uint8Array(digest);
   }
