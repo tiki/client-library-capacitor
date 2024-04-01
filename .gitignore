@@ -9,7 +9,7 @@ node_modules
 coverage
 
 #typedoc files
-docs
+#docs
 
 #intelliJ
 .idea
