@@ -25,7 +25,7 @@
     "src",
     "src/auth",
     "src/capture",
-    "src/client",
+    "src/tiki_client",
     "src/config",
     "src/key",
     "src/license",

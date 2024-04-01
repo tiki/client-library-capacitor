@@ -4,14 +4,29 @@
  */
 
 import { Config } from "./config";
-import _TikiClient from "./client";
+import _TikiClient from "./tiki_client";
 
+/**
+ * TikiPlugin is a Vue plugin that integrates TIKI services into a Vue application.
+ * 
+ * To use this plugin, first initialize the TikiClient with appropriate configurations using [TikiClient.initialize],
+ * or use it as a Vue plugin by calling [Vue.use] method as shown below:
+ * 
+ * ```typescript
+ * import Vue from 'vue';
+ * import TikiPlugin, { TikiClient } from 'path/to/tiki-plugin';
+ * 
+ * Vue.use(TikiPlugin, {
+ *   providerId: "provider-id",
+ *   publicKey: "public-key",
+ *   companyName: "ACME Inc",
+ *   companyJurisdiction: "Nashville, TN",
+ *   tosUrl: "https://acme.inc/tos",
+ *   privacyUrl: "https://acme.inc/privacy"
+ * });
+ * ```
+ */
 export default {
-  /**
-   * The Vue method to install the library as a plugin
-   * @param _vue - The vue application instance to install the plugin.
-   * @param options - The object that contains the company information necessary to instantiate the class and create license/publish data.
-   */
   install: function (_vue: any, options: Config) {
     _TikiClient.configuration(options)
   }
