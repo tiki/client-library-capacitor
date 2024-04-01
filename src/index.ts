@@ -4,7 +4,7 @@
  */
 
 import { Config } from "./config";
-import _TikiClient from "./client";
+import _TikiClient from "./tiki_client";
 
 /**
  * TikiPlugin is a Vue plugin that integrates TIKI services into a Vue application.
