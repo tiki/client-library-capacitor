@@ -40,7 +40,6 @@ jobs:
       - name: Set JS Version
         uses: KageKirin/set-node-package-version@v1
         with:
-          file: package.json
           version: ${{ steps.semver.outputs.nextStrict }}
 
       - name: Update lock
