@@ -5,6 +5,7 @@
 
 import { Camera, CameraResultType, CameraSource } from "@capacitor/camera";
 import Utils from "../utils";
+import { ReceiptResponse } from "./types";
 
 export default class Capture {
   private publishUrl: string = "https://publish.mytiki.com";
@@ -60,5 +61,24 @@ export default class Capture {
     }
 
     return id;
+  }
+
+  /**
+   * Get the result of the receipt image processing.
+   * 
+   * @param receiptId 
+   * @param token 
+   * @returns ReceiptResponse
+   */
+  public async getReceipt(receiptId: string, token: string): Promise<ReceiptResponse[]>{
+    const url = `${this.publishUrl}/receipt/${receiptId}`
+    const headers = new Headers();
+    headers.append("Content-Type", "application/json");
+    headers.append("Authorization", "Bearer " + token);
+    const options = {
+        method: "GET",
+        headers,
+      };
+    return (await fetch(url, options)).json()
   }
 }
