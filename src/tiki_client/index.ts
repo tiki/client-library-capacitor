@@ -14,6 +14,7 @@ import type {
 } from "../license/types/index";
 import { Config } from "../config";
 import { App } from "@capacitor/app";
+import { ReceiptResponse } from "../capture/types";
 
 /**
  * TikiClient is the main interface for interacting with the TIKI services.
@@ -166,7 +167,7 @@ export default class TikiClient {
       return;
     }
 
-    await instance.capture.publish(images, addressToken);
+    return await instance.capture.publish(images, addressToken);
   }
 
   /**
@@ -264,5 +265,60 @@ export default class TikiClient {
   public static configuration(configuration: Config) {
     let instance = TikiClient.getInstance();
     instance.config = configuration;
+  }
+
+  public static async receipt(receiptId: string): Promise<ReceiptResponse[] | undefined> {
+    let instance = TikiClient.getInstance();
+
+    if (instance.config == undefined) {
+      console.error(
+        "TIKI Client is not configured. Use the TikiClient.configure method to add a configuration."
+      );
+      return;
+    }
+
+    if (instance.userId == undefined) {
+      console.error(
+        "User id not defined. Use the TikiClient.initialize method to register the user."
+      );
+      return;
+    }
+
+    const key = await instance.keyService.get(
+      instance.config.providerId,
+      instance.userId
+    );
+
+    if (!key) {
+      console.error(
+        "Key Pair not found. Use the TikiClient.initialize method to register the user."
+      );
+      return;
+    }
+
+    const address: string = Utils.arrayBufferToBase64Url(
+      await instance.keyService.address(key.value)
+    );
+
+    const signature: string = await Utils.generateSignature(
+      address,
+      key?.value.privateKey
+    );
+
+    const addressToken: string | undefined = await instance.auth.getToken(
+      instance.config.providerId,
+      signature,
+      ["trail publish"],
+      address
+    );
+
+    if (!addressToken) {
+      console.error("Failed to get Address Token");
+      return;
+    }
+
+    const receipt = await instance.capture.receipt(receiptId, addressToken);
+
+    return receipt;
   }
 }

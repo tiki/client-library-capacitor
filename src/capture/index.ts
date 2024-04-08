@@ -70,7 +70,7 @@ export default class Capture {
    * @param token 
    * @returns ReceiptResponse
    */
-  public async getReceipt(receiptId: string, token: string): Promise<ReceiptResponse[]>{
+  public async receipt(receiptId: string, token: string): Promise<ReceiptResponse[]>{
     const url = `${this.publishUrl}/receipt/${receiptId}`
     const headers = new Headers();
     headers.append("Content-Type", "application/json");
