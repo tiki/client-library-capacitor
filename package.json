@@ -1,6 +1,6 @@
 {
   "name": "@mytiki/publish-client-capacitor",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "main": "./dist/my-lib.umd.cjs",
   "module": "./dist/my-lib.js",
   "types": "./dist/index.d.ts",
@@ -10,7 +10,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "jest",
-    "docs": "npx typedoc ./src/client/index.ts ./src/auth/index.ts ./src/key/index.ts ./src/capture/index.ts ./src/config/config.ts ./src/license/index.ts ./src/license/types/postLicenseRequest.ts"
+    "docs": "npx typedoc ./src/tiki_client/index.ts ./src/auth/index.ts ./src/key/index.ts ./src/capture/index.ts ./src/config/config.ts ./src/license/index.ts ./src/license/types/postLicenseRequest.ts"
   },
   "devDependencies": {
     "@jest/globals": "^29.7.0",

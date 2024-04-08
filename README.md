@@ -149,7 +149,19 @@ const image = await TikiClient.scan();
 await TikiClient.publish([image]);
 ```
 
-Upon execution, this method returns a unique ID for the receipt, facilitating easy retrieval of the extracted data in the [Data Cleanroom](https://mytiki.com/reference/data-cleanrooms).
+Upon execution, this method returns a unique ID for the receipt, facilitating easy retrieval of the extracted data or referencing it in the [Data Cleanroom](https://mytiki.com/reference/data-cleanrooms).
+
+### Retrieve Results
+
+Once you've uploaded receipt images to TIKI for processing using the `TikiClient.publish` method, you can retrieve the extracted data associated with a specific receipt by calling the `TikiClient.receipt(receiptId)` method.
+
+```typescript
+// Assuming you have the receiptId stored in a variable named 'receiptId'
+let receiptData = await TikiClient.receipt(receiptId);
+console.log(receiptData);
+```
+
+**Note**: The data extraction from receipts is performed asynchronously by Amazon Textract. Processing typically takes a few seconds, but it can occasionally take up to a minute. It's important to note that making subsequent calls to `TikiClient.receipt(receiptId)` shortly after using `TikiClient.publish` might lead to unexpected results and false `404` errors from the API. We recommend allowing sufficient time for the extraction process to complete before attempting to retrieve the extracted data.
 
 ## API Reference
 
