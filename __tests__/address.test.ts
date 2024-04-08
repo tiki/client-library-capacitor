@@ -1,4 +1,4 @@
-import KeyService from '../src/Key/index'
+import KeyService from '../src/key/index'
 
 
 const keyService = new KeyService()

@@ -1,4 +1,25 @@
+/*
+ * Copyright (c) TIKI Inc.
+ * MIT license. See LICENSE file in root directory.
+ */
+
+/**
+ * Utils provides utility functions for handling various tasks such as network requests, 
+ * cryptography, and data conversion across the library.
+ */
 export default class Utils {
+
+  /**
+   * Handles an HTTP request with the provided URL, method, token, and optional body. 
+   * 
+   * The expected result type is passed in the generic parameter T.
+   * 
+   * @param url - The URL to send the request to.
+   * @param method - The HTTP method (e.g., GET, POST).
+   * @param token - The authorization token.
+   * @param body - Optional body data to send with the request.
+   * @returns A Promise resolving to the response data.
+   */
   public async handleRequest<T>(
     url: string,
     method: string,
@@ -30,6 +51,12 @@ export default class Utils {
     return response.json();
   }
 
+  /**
+   * Converts a base64 string to a File object.
+   * @param base64String - The base64 string to convert.
+   * @param filename - The filename for the resulting File object.
+   * @returns The File object.
+   */
   public static base64StringToFile(
     base64String: string,
     filename: string
@@ -44,7 +71,13 @@ export default class Utils {
     return new File([blob], filename);
   }
 
-  public static async exportKeyPairToBuffer(
+  /**
+   * Converts a CryptoKeyPair's public key to an ArrayBuffer.
+   * 
+   * @param keyPair - The CryptoKeyPair containing the public key.
+   * @returns The ArrayBuffer representing the public key.
+   */
+  public static async exportPublicKeyToBuffer(
     keyPair: CryptoKeyPair
   ): Promise<ArrayBuffer> {
     const publicKeyExported = await window.crypto.subtle.exportKey(
@@ -54,11 +87,24 @@ export default class Utils {
     return new Uint8Array(publicKeyExported).buffer;
   }
 
+  /**
+   * Encodes a Uint8Array to base64 string.
+   * 
+   * @param bytes - The Uint8Array to encode.
+   * @returns The base64 encoded string.
+   */
   public static base64Encode = (bytes: Uint8Array): string =>
     btoa(
       bytes.reduce((acc, current) => acc + String.fromCharCode(current), "")
     );
 
+  /**
+   * Signs a message with the given private key using RSASSA-PKCS1-v1_5 algorithm.
+   * 
+   * @param message - The message to sign.
+   * @param privateKey - The private key to sign the message with.
+   * @returns The base64 encoded signature of the message.
+   */
   public static async signMessage(
     message: string,
     privateKey: CryptoKey
@@ -71,6 +117,12 @@ export default class Utils {
     return this.base64Encode(new Uint8Array(signature));
   }
 
+  /**
+   * Converts an ArrayBuffer to a base64 URL-safe string.
+   * 
+   * @param arrayBuffer - The ArrayBuffer to convert.
+   * @returns The base64 URL-safe string.
+   */
   public static arrayBufferToBase64Url(arrayBuffer: ArrayBuffer): string {
     const uint8Array = new Uint8Array(arrayBuffer);
 
@@ -84,6 +136,13 @@ export default class Utils {
     return base64Url;
   }
 
+  /**
+   * Signs a message with the given private key using RSASSA-PKCS1-v1_5 algorithm.
+   * 
+   * @param message - The message to sign.
+   * @param privateKey - The private key to sign the message with.
+   * @returns The base64 encoded signature of the message.
+   */
   public static async generateSignature(
     address: string,
     privateKey: CryptoKey
@@ -103,6 +162,13 @@ export default class Utils {
     return this.base64Encode(new Uint8Array(signature));
   }
 
+  /**
+   * Converts a base64 string to a Blob.
+   * 
+   * @param base64Data - The base64 string to convert.
+   * @param contentType - The content type of the Blob.
+   * @returns The Blob object.
+   */
   public static base64toBlob(base64Data: string, contentType: string): Blob {
     contentType = contentType || "";
     const sliceSize = 1024;
@@ -124,7 +190,13 @@ export default class Utils {
     return new Blob(byteArrays, { type: contentType });
   }
 
-  // Function to modify the content of the Markdown file
+  /**
+   * Modifies content by replacing specific words with new ones.
+   * 
+   * @param content - The content to modify.
+   * @param replacements - An object containing the original words as keys and the new words as values.
+   * @returns The modified content.
+   */
   public static modifyMarkdownContent(
     content: string,
     replacements: { [key: string]: string }
