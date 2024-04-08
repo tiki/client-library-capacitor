@@ -267,7 +267,16 @@ export default class TikiClient {
     instance.config = configuration;
   }
 
-  public static async receipt(receiptId: string): Promise<ReceiptResponse[] | undefined> {
+  /**
+   * Retrieve the structured data extracted from the processed receipt image.
+   * 
+   * This method fetches the result of the receipt image processing from the server.
+   * 
+   * @param {string} receiptId - The unique identifier for the receipt obtained from the {@link publish} method.
+   * @returns {Promise<ReceiptResponse[] | undefined>} A Promise that resolves with an array of {@link ReceiptResponse} objects,
+   * each containing the structured data extracted from an image of the receipt, or undefined if the retrieval fails.
+   */
+  public static async receipt(receiptId: string): Promise<ReceiptResponse[] | undefined>{
     let instance = TikiClient.getInstance();
 
     if (instance.config == undefined) {

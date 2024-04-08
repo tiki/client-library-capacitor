@@ -64,11 +64,14 @@ export default class Capture {
   }
 
   /**
-   * Get the result of the receipt image processing.
+   * Retrieve the structured data extracted from the processed receipt image.
    * 
-   * @param receiptId 
-   * @param token 
-   * @returns ReceiptResponse
+   * This method fetches the result of the receipt image processing from the server, considering all the published images.
+   * 
+   * @param {string} receiptId - The unique identifier for the receipt obtained from the {@link publish} method.
+   * @param {string} token - The authentication token required to authorize the request to the server.
+   * @returns {Promise<ReceiptResponse[]>} A Promise that resolves with an array of {@link ReceiptResponse} objects,
+   * each containing the structured data extracted from an image of the receipt.
    */
   public async receipt(receiptId: string, token: string): Promise<ReceiptResponse[]>{
     const url = `${this.publishUrl}/receipt/${receiptId}`

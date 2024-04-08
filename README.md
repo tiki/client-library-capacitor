@@ -151,11 +151,9 @@ await TikiClient.publish([image]);
 
 Upon execution, this method returns a unique ID for the receipt, facilitating easy retrieval of the extracted data or referencing it in the [Data Cleanroom](https://mytiki.com/reference/data-cleanrooms).
 
-## Retrieve Results
+### Retrieve Results
 
 Once you've uploaded receipt images to TIKI for processing using the `TikiClient.publish` method, you can retrieve the extracted data associated with a specific receipt by calling the `TikiClient.receipt(receiptId)` method.
-
-### Example Usage
 
 ```typescript
 // Assuming you have the receiptId stored in a variable named 'receiptId'
