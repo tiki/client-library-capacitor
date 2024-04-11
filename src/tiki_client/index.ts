@@ -35,6 +35,7 @@ export default class TikiClient {
   private userId: string | undefined;
   private config: Config | undefined;
   private keyService = new KeyService();
+  private token: string = '';
 
   private constructor() { }
 
@@ -82,6 +83,8 @@ export default class TikiClient {
     }
 
     instance.userId = userId;
+
+    await instance.saveToken()
   }
 
   /**
@@ -123,41 +126,15 @@ export default class TikiClient {
       return;
     }
 
-    const key = await instance.keyService.get(
-      instance.config.providerId,
-      instance.userId
-    );
-
-    if (!key) {
+    if(!instance.token){
       console.error(
-        "Key Pair not found. Use the TikiClient.initialize method to register the user."
+        "Token not founded. Use the TikiClient.initialize method to create one."
       );
       return;
     }
 
-    const address: string = Utils.arrayBufferToBase64Url(
-      await instance.keyService.address(key.value)
-    );
-
-    const signature: string = await Utils.generateSignature(
-      address,
-      key?.value.privateKey
-    );
-
-    const addressToken: string | undefined = await instance.auth.getToken(
-      instance.config.providerId,
-      signature,
-      ["trail publish"],
-      address
-    );
-
-    if (!addressToken) {
-      console.error("Failed to get Address Token");
-      return;
-    }
-
     const verifyLicense: RspGuard = await instance.license.verify(
-      addressToken!
+      instance.token
     );
 
     if (!verifyLicense || !verifyLicense.verified) {
@@ -167,7 +144,7 @@ export default class TikiClient {
       return;
     }
 
-    return await instance.capture.publish(images, addressToken);
+    return await instance.capture.publish(images, instance.token);
   }
 
   /**
@@ -203,27 +180,6 @@ export default class TikiClient {
       return;
     }
 
-    const address: string = Utils.arrayBufferToBase64Url(
-      await instance.keyService.address(key.value)
-    );
-
-    const signature: string = await Utils.generateSignature(
-      address,
-      key?.value.privateKey
-    );
-
-    const addressToken: string | undefined = await instance.auth.getToken(
-      instance.config.providerId,
-      signature,
-      ["trail"],
-      address
-    );
-
-    if (!addressToken) {
-      console.error("It was not possible to get the token, try to inialize!");
-      return;
-    }
-
     const terms: string = instance.license.terms(
       instance.config.companyName,
       instance.config.companyJurisdiction,
@@ -255,7 +211,14 @@ export default class TikiClient {
 
     licenseReq.signature = licenseSignature
 
-    return await instance.license.create(addressToken, licenseReq);
+    if(!instance.token){
+      console.error(
+        "Token not founded. Use the TikiClient.initialize method to create one."
+      );
+      return;
+    }
+
+    return await instance.license.create(instance.token, licenseReq);
   }
 
   /**
@@ -293,9 +256,31 @@ export default class TikiClient {
       return;
     }
 
+    if(!instance.token){
+      console.error(
+        "Token not founded. Use the TikiClient.initialize method to create one."
+      );
+      return;
+    }
+
+    const receipt = await instance.capture.receipt(receiptId, instance.token);
+
+    return receipt;
+  }
+
+  private async saveToken(){
+    let instance = TikiClient.getInstance();
+
+    if (instance.config == undefined) {
+      console.error(
+        "TIKI Client is not configured. Use the TikiClient.configure method to add a configuration."
+      );
+      return;
+    }
+
     const key = await instance.keyService.get(
       instance.config.providerId,
-      instance.userId
+      instance.userId!
     );
 
     if (!key) {
@@ -315,7 +300,7 @@ export default class TikiClient {
     );
 
     const addressToken: string | undefined = await instance.auth.getToken(
-      instance.config.providerId,
+      instance?.config!.providerId,
       signature,
       ["trail publish"],
       address
@@ -326,8 +311,6 @@ export default class TikiClient {
       return;
     }
 
-    const receipt = await instance.capture.receipt(receiptId, addressToken);
-
-    return receipt;
+    instance.token = addressToken
   }
 }
