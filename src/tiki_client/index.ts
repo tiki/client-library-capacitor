@@ -36,6 +36,7 @@ export default class TikiClient {
   private config: Config | undefined;
   private keyService = new KeyService();
   private token: string = '';
+  private refreshToken: string = ''
 
   private constructor() { }
 
@@ -73,7 +74,6 @@ export default class TikiClient {
       instance.config.providerId,
       userId
     );
-
     if (!key) {
       await instance.auth.registerAddress(
         instance.config.providerId,
@@ -299,18 +299,20 @@ export default class TikiClient {
       key?.value.privateKey
     );
 
-    const addressToken: string | undefined = await instance.auth.getToken(
+    const addressToken = await instance.auth.getToken(
       instance?.config!.providerId,
       signature,
       ["trail publish"],
       address
     );
 
-    if (!addressToken) {
+    if (!addressToken || !addressToken.token) {
       console.error("Failed to get Address Token");
       return;
     }
 
-    instance.token = addressToken
+    instance.token = addressToken.token
+    
+    if(addressToken.refreshToken) instance.refreshToken = addressToken.refreshToken
   }
 }

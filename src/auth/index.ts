@@ -30,7 +30,7 @@ export default class Auth {
     secret: string,
     scopes: Array<string>,
     address?: string
-  ): Promise<string | undefined> {
+  ): Promise<{token: string, refreshToken?: string} | undefined> {
     const data = {
       grant_type: "client_credentials",
       client_id:
@@ -63,8 +63,8 @@ export default class Auth {
 
       const responseData = await response.json();
 
-      const { access_token } = responseData;
-      return access_token;
+      const { access_token, refresh_token } = responseData;
+      return {token: access_token, refreshToken: refresh_token};
     } catch (error) {
       console.error(`Error fetching token: ${error}`);
       return
@@ -86,7 +86,7 @@ export default class Auth {
     const accessToken = await this.getToken(providerId, pubKey, [
       "account:provider",
     ]);
-    if (!accessToken) {
+    if (!accessToken || !accessToken.token) {
       console.error("Error generating the provider accessToken");
       return;
     }
@@ -129,7 +129,7 @@ export default class Auth {
     const headers = new Headers();
     headers.append("accept", "application/json");
     headers.append("content-type", "application/json");
-    headers.append("authorization", "Bearer " + accessToken);
+    headers.append("authorization", "Bearer " + accessToken.token);
     const response = await fetch(url, {
       method: "POST",
       headers: headers,
