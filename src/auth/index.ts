@@ -152,4 +152,41 @@ export default class Auth {
       return
     }
   }
+
+  async refreshToken(token: string){
+    const data = {
+      grant_type: "refresh_token",
+      refresh_token: token
+    };
+
+    const headers = new Headers();
+    headers.append("Accept", "application/json");
+    headers.append("Content-Type", "application/x-www-form-urlencoded");
+
+    const requestOptions: RequestInit = {
+      method: "POST",
+      headers: headers,
+      body: new URLSearchParams(data),
+    };
+
+    try {
+      const response = await fetch("https://account.mytiki.com/api/latest/auth", requestOptions);
+
+      if (!response.ok) {
+        console.error(
+          `HTTP error! Status: ${response.status}, message: ${response.json()}`
+        );
+        return
+      }
+
+      const responseData = await response.json();
+
+      const { access_token } = responseData;
+      return access_token;
+    } catch (error) {
+      console.error(`Error fetching token: ${error}`);
+      return
+    }
+
+  }
 }
