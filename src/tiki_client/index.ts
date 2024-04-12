@@ -244,6 +244,26 @@ export default class TikiClient {
     return receipt;
   }
 
+  public static logout(){
+    let instance = TikiClient.getInstance();
+
+    if (instance.config == undefined) {
+      console.error(
+        "TIKI Client is not configured. Use the TikiClient.configure method to add a configuration."
+      );
+      return;
+    }
+
+    if (instance.userId == undefined) {
+      console.error(
+        "No user logged in"
+      );
+      return;
+    }
+
+    return instance.auth.logout()
+  }
+
   private async saveToken(){
     let instance = TikiClient.getInstance();
 
@@ -287,4 +307,5 @@ export default class TikiClient {
       return;
     }
   }
+
 }

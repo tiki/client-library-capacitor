@@ -200,4 +200,12 @@ export default class Auth {
     }
 
   }
+
+  public logout(){
+    localStorage.removeItem("accessToken")
+
+    localStorage.removeItem("refreshToken")
+
+    return "Logout succesfully"
+  }
 }
