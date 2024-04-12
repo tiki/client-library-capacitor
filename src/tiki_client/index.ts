@@ -35,8 +35,6 @@ export default class TikiClient {
   private userId: string | undefined;
   private config: Config | undefined;
   private keyService = new KeyService();
-  private token: string = '';
-  private refreshToken: string = ''
 
   private constructor() { }
 
@@ -126,15 +124,7 @@ export default class TikiClient {
       return;
     }
 
-    if(!instance.token){
-      console.error(
-        "Token not founded. Use the TikiClient.initialize method to create one."
-      );
-      return;
-    }
-
     const verifyLicense: RspGuard = await instance.license.verify(
-      instance.token
     );
 
     if (!verifyLicense || !verifyLicense.verified) {
@@ -144,7 +134,7 @@ export default class TikiClient {
       return;
     }
 
-    return await instance.capture.publish(images, instance.token);
+    return await instance.capture.publish(images);
   }
 
   /**
@@ -211,14 +201,7 @@ export default class TikiClient {
 
     licenseReq.signature = licenseSignature
 
-    if(!instance.token){
-      console.error(
-        "Token not founded. Use the TikiClient.initialize method to create one."
-      );
-      return;
-    }
-
-    return await instance.license.create(instance.token, licenseReq);
+    return await instance.license.create(licenseReq);
   }
 
   /**
@@ -256,14 +239,7 @@ export default class TikiClient {
       return;
     }
 
-    if(!instance.token){
-      console.error(
-        "Token not founded. Use the TikiClient.initialize method to create one."
-      );
-      return;
-    }
-
-    const receipt = await instance.capture.receipt(receiptId, instance.token);
+    const receipt = await instance.capture.receipt(receiptId);
 
     return receipt;
   }
@@ -310,9 +286,5 @@ export default class TikiClient {
       console.error("Failed to get Address Token");
       return;
     }
-
-    instance.token = addressToken.token
-    
-    if(addressToken.refreshToken) instance.refreshToken = addressToken.refreshToken
   }
 }

@@ -15,7 +15,6 @@ import terms from '../assets/terms.md?raw';
  */
 export default class License {
   private baseUrl: string = "https://trail.mytiki.com"
-  private utils = new Utils();
 
   /**
    * Creates a license to publish data to Tiki.
@@ -25,15 +24,12 @@ export default class License {
    * @returns The saved license object.
    */
   public async create(
-    token: string,
     postLicenseRequest: PostLicenseRequest
   ): Promise<PostLicenseRequest> {
     const url = `${this.baseUrl}/license/create`;
-    debugger;
-    return this.utils.handleRequest<PostLicenseRequest>(
+    return Utils.handleRequest<PostLicenseRequest>(
       url,
       "POST",
-      token,
       postLicenseRequest
     );
   }
@@ -45,13 +41,11 @@ export default class License {
    * @returns An object containing a boolean and a reason message to confirm the validation or not.
    */
   public async verify(
-    token: string
   ): Promise<RspGuard> {
     const url = `${this.baseUrl}/license/verify`;
-    return this.utils.handleRequest<RspGuard>(
+    return Utils.handleRequest<RspGuard>(
       url,
       "POST",
-      token
     );
   }
 

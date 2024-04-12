@@ -63,7 +63,13 @@ export default class Auth {
 
       const responseData = await response.json();
 
+      
       const { access_token, refresh_token } = responseData;
+
+      if(address){
+        localStorage.setItem('accessToken', access_token)
+        localStorage.setItem('refreshToken', refresh_token)
+      }
       return {token: access_token, refreshToken: refresh_token};
     } catch (error) {
       console.error(`Error fetching token: ${error}`);
@@ -153,10 +159,10 @@ export default class Auth {
     }
   }
 
-  async refreshToken(token: string){
+  public static async refreshToken(refreshToken: string){
     const data = {
       grant_type: "refresh_token",
-      refresh_token: token
+      refresh_token: refreshToken
     };
 
     const headers = new Headers();
@@ -181,7 +187,12 @@ export default class Auth {
 
       const responseData = await response.json();
 
-      const { access_token } = responseData;
+      const { access_token, refresh_token } = responseData;
+
+      localStorage.setItem('accessToken', access_token)
+
+      localStorage.setItem('refreshToken', refresh_token)
+
       return access_token;
     } catch (error) {
       console.error(`Error fetching token: ${error}`);
