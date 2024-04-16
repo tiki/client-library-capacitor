@@ -72,7 +72,6 @@ export default class TikiClient {
       instance.config.providerId,
       userId
     );
-
     if (!key) {
       await instance.auth.registerAddress(
         instance.config.providerId,
@@ -82,6 +81,8 @@ export default class TikiClient {
     }
 
     instance.userId = userId;
+
+    await instance.saveToken()
   }
 
   /**
@@ -123,41 +124,7 @@ export default class TikiClient {
       return;
     }
 
-    const key = await instance.keyService.get(
-      instance.config.providerId,
-      instance.userId
-    );
-
-    if (!key) {
-      console.error(
-        "Key Pair not found. Use the TikiClient.initialize method to register the user."
-      );
-      return;
-    }
-
-    const address: string = Utils.arrayBufferToBase64Url(
-      await instance.keyService.address(key.value)
-    );
-
-    const signature: string = await Utils.generateSignature(
-      address,
-      key?.value.privateKey
-    );
-
-    const addressToken: string | undefined = await instance.auth.getToken(
-      instance.config.providerId,
-      signature,
-      ["trail publish"],
-      address
-    );
-
-    if (!addressToken) {
-      console.error("Failed to get Address Token");
-      return;
-    }
-
     const verifyLicense: RspGuard = await instance.license.verify(
-      addressToken!
     );
 
     if (!verifyLicense || !verifyLicense.verified) {
@@ -167,7 +134,7 @@ export default class TikiClient {
       return;
     }
 
-    return await instance.capture.publish(images, addressToken);
+    return await instance.capture.publish(images);
   }
 
   /**
@@ -203,27 +170,6 @@ export default class TikiClient {
       return;
     }
 
-    const address: string = Utils.arrayBufferToBase64Url(
-      await instance.keyService.address(key.value)
-    );
-
-    const signature: string = await Utils.generateSignature(
-      address,
-      key?.value.privateKey
-    );
-
-    const addressToken: string | undefined = await instance.auth.getToken(
-      instance.config.providerId,
-      signature,
-      ["trail"],
-      address
-    );
-
-    if (!addressToken) {
-      console.error("It was not possible to get the token, try to inialize!");
-      return;
-    }
-
     const terms: string = instance.license.terms(
       instance.config.companyName,
       instance.config.companyJurisdiction,
@@ -255,7 +201,7 @@ export default class TikiClient {
 
     licenseReq.signature = licenseSignature
 
-    return await instance.license.create(addressToken, licenseReq);
+    return await instance.license.create(licenseReq);
   }
 
   /**
@@ -293,9 +239,44 @@ export default class TikiClient {
       return;
     }
 
+    const receipt = await instance.capture.receipt(receiptId);
+
+    return receipt;
+  }
+
+  public static logout(){
+    let instance = TikiClient.getInstance();
+
+    if (instance.config == undefined) {
+      console.error(
+        "TIKI Client is not configured. Use the TikiClient.configure method to add a configuration."
+      );
+      return;
+    }
+
+    if (instance.userId == undefined) {
+      console.error(
+        "No user logged in"
+      );
+      return;
+    }
+
+    return instance.auth.logout()
+  }
+
+  private async saveToken(){
+    let instance = TikiClient.getInstance();
+
+    if (instance.config == undefined) {
+      console.error(
+        "TIKI Client is not configured. Use the TikiClient.configure method to add a configuration."
+      );
+      return;
+    }
+
     const key = await instance.keyService.get(
       instance.config.providerId,
-      instance.userId
+      instance.userId!
     );
 
     if (!key) {
@@ -314,20 +295,17 @@ export default class TikiClient {
       key?.value.privateKey
     );
 
-    const addressToken: string | undefined = await instance.auth.getToken(
-      instance.config.providerId,
+    const addressToken = await instance.auth.getToken(
+      instance?.config!.providerId,
       signature,
       ["trail publish"],
       address
     );
 
-    if (!addressToken) {
+    if (!addressToken || !addressToken.token) {
       console.error("Failed to get Address Token");
       return;
     }
-
-    const receipt = await instance.capture.receipt(receiptId, addressToken);
-
-    return receipt;
   }
+
 }

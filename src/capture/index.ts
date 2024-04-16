@@ -37,27 +37,18 @@ export default class Capture {
    * @param {string} token - the address token to authenticate the request to our server.
    * @returns {Promise<string>} A Promise that resolves with the ID of the request or void in case of any error.
    */
-  public async publish(images: string[], token: string): Promise<string | void> {
+  public async publish(images: string[]): Promise<string | void> {
     const id = window.crypto.randomUUID();
-
-    const headers = new Headers();
-    headers.append("Content-Type", "image/jpeg");
-    headers.append("Authorization", "Bearer " + token);
 
     for (const image of images) {
       const body = Utils.base64toBlob(image, "image/jpeg");
       const url = `${this.publishUrl}/receipt/${id}`;
 
-      const response = await fetch(url, {
-        method: "POST",
-        body,
-        headers,
-      });
-
-      if (!response.ok) {
-        console.error(`Error uploading files. Status: ${response.status}`);
+      await Utils.handleRequest(url, "POST", body).catch((error)=>{
+        console.error(`Error uploading files. Status: ${error}`);
         return
-      }
+      })
+      
     }
 
     return id;
@@ -73,15 +64,9 @@ export default class Capture {
    * @returns {Promise<ReceiptResponse[]>} A Promise that resolves with an array of {@link ReceiptResponse} objects,
    * each containing the structured data extracted from an image of the receipt.
    */
-  public async receipt(receiptId: string, token: string): Promise<ReceiptResponse[]>{
+  public async receipt(receiptId: string
+    ): Promise<ReceiptResponse[]>{
     const url = `${this.publishUrl}/receipt/${receiptId}`
-    const headers = new Headers();
-    headers.append("Content-Type", "application/json");
-    headers.append("Authorization", "Bearer " + token);
-    const options = {
-        method: "GET",
-        headers,
-      };
-    return (await fetch(url, options)).json()
+    return await Utils.handleRequest(url, "GET")
   }
 }

@@ -3,6 +3,7 @@
  * MIT license. See LICENSE file in root directory.
  */
 
+import Auth from "../auth";
 /**
  * Utils provides utility functions for handling various tasks such as network requests, 
  * cryptography, and data conversion across the library.
@@ -16,23 +17,24 @@ export default class Utils {
    * 
    * @param url - The URL to send the request to.
    * @param method - The HTTP method (e.g., GET, POST).
-   * @param token - The authorization token.
    * @param body - Optional body data to send with the request.
    * @returns A Promise resolving to the response data.
    */
-  public async handleRequest<T>(
+  public static async handleRequest<T>(
     url: string,
     method: string,
-    token: string,
-    body?: object
+    body?: object,
   ): Promise<T> {
+    const bearerToken = localStorage.getItem("accessToken")
+    const refreshToken = localStorage.getItem("refreshToken")
+    const attempts = 3
     const headers = new Headers();
-    headers.append("Authorization", `Bearer ${token}`);
+    headers.append("Authorization", `Bearer ${bearerToken}`);
     headers.append("Content-Type", "application/json");
     headers.append("Access-Control-Allow-Origin", "http://localhost:5173");
     headers.append("Access-Control-Allow-Credentials", "true");
 
-    const requestOptions: RequestInit = {
+    let requestOptions: RequestInit = {
       method,
       headers: headers,
     };
@@ -44,9 +46,31 @@ export default class Utils {
     const response = await fetch(url, requestOptions);
 
     if (!response.ok) {
-      const errorBody = await response.json();
-      throw errorBody;
-    }
+      if (response.status === 401) {
+          if (!refreshToken) {
+              throw new Error('Refresh Token not found. Use TikiClient.initialize method to register the user and create a new one.');
+          }
+          for (let index = 0; index < attempts; index++) {
+              const newToken = Auth.refreshToken(refreshToken);
+              headers.delete("Authorization")
+              headers.append("Authorization", `Bearer ${newToken}`)
+              requestOptions.headers = headers
+              const retryResponse = await fetch(url, requestOptions);
+              
+              if (retryResponse.ok) return retryResponse.json();
+              else if (retryResponse.status !== 401) {
+                  const errorBody = await retryResponse.json();
+                  throw new Error(`Request failed with status ${retryResponse.status}: ${JSON.stringify(errorBody)}`);
+              }
+          }
+          
+          throw new Error(`Failed to authenticate after ${attempts} attempts.`);
+      } else {
+          const errorBody = await response.json();
+          throw new Error(`Request failed with status ${response.status}: ${JSON.stringify(errorBody)}`);
+      }
+  }
+  
 
     return response.json();
   }
