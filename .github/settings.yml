@@ -1,3 +1,37 @@
 # Reference: https://github.com/repository-settings/app
+
 _extends: .github
 
+repository:
+  name: client-library-capacitor
+  description: integrate your Capacitor app with mytiki.com
+  homepage: https://docs.mytiki.com/reference/client-library-overview
+  topics: capacitor, library
+  private: false
+
+teams:
+  - name: sysadmin
+    permission: admin
+  - name: engineering
+    permission: push
+  - name: product
+    permission: triage
+  - name: frontend
+    permission: push
+
+environments:
+  - name: production
+
+branches:
+  - name: main
+    protection:
+      required_status_checks:
+        strict: true
+        contexts:
+          - Tests
+          - CodeQL
+
+milestones:
+  - title: 0.2.1
+    description: DRAFT
+    state: open
