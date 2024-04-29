@@ -173,10 +173,10 @@ For detailed usage instructions, please consult the [TIKI Client API Documentati
 
 To see a simple implementation of the TIKI Client library in a Capacitor + Vue.js app, check the [Example App](https://github.com/tiki/publish-client-capacitor/tree/main/example).
 
-# Contributing
+## Contributing
+Please review our [Contributor Guidelines](https://github.com/mytiki/.github/blob/main/CONTRIBUTING.md) before beginning. Utilize GitHub Issues, Discussions, and Security Advisories to provide feedback.
 
-- Use [GitHub Issues](https://github.com/tiki/publish-client-capacitor/issues) to report bugs or
-
- request enhancements.
-- To contact our team or other active contributors, join our 👾 [Discord](https://discord.gg/tiki).
-- Please adhere to [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/) when contributing code to this project.
+- [Ask a Question](https://github.com/orgs/mytiki/discussions)
+- [Report a Bug](https://github.com/mytiki/roadmap/issues/new?assignees=&labels=bug%2Crequest&projects=&template=bug.yml)
+- [Report a Vulnerability](https://github.com/mytiki/client-library-capacitor/security/advisories/new)
+- [Request a Feature](https://github.com/mytiki/roadmap/issues/new?assignees=&labels=feature%2Crequest&projects=&template=feature.yml)
